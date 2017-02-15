@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+
+</head>
+<body ng-app="twitterstuff">
+<div ng-controller="twitterselect">
+
+<h1>
+Plant Genetics Author Country Link Graph
+</h1>
+<!-- <h4>Change Field</h4>
+          <select ng-model="field" ng-options="m for m in fields" ng-change="viz()"></select>-->
+
+<svg id="svg_donut" width='1000px' height='1000px'></svg>
+
+<div id="graph"></div>
+
+</div>
+</div>
+<!-- Angular Material requires Angular.js Libraries -->
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
+
+  <!-- Angular Material Library -->
+  <script src="/ext/d3.v3.min.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+
+<script>
+
+var vis = d3.select("#svg_donut");
+//var cScale = d3.scale.linear().domain([0, 4]).range([0, 2 * Math.PI]);
+
+
+
+
+
+var termiteTopics = angular.module('twitterstuff', [], function($locationProvider) {
+  $locationProvider.html5Mode(true);
+});
+
+termiteTopics.controller('twitterselect',['$scope', function($scope){
+var width = 1000,
+    height = 1000,
+    radius = 4,
+    charge = -50,
+    linkDistance = 20;
+    
+
+  charge = -40;
+
+ // linkDistance = 0.5714285714285714;
+
+
+
+
+
+
+var color = ['black', 'red', 'green', 'blue', 'yellow', 'white', 'orange', 'purple']
+
+/*$scope.days=[]
+for(var i = 23; i < 31; i++){
+  $scope.days.push(i)
+}
+
+$scope.day = 23*/
+
+var force = d3.layout.force()
+  .charge(charge)
+  .linkDistance(linkDistance)
+    .size([width, height]);
+
+
+
+$scope.viz = function(){
+  d3.select('#network').remove()
+
+var svg_graph = d3.select("#graph").append("svg")
+  .attr("xmlns","http://www.w3.org/2000/svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr('id', 'network');
+
+d3.json("/formatted_data/formatted10-11-allBlackLivesMatterAllLivesMatterMichaelBrownFergusonPolice.json", function(error, graph) {
+  force
+      .nodes(graph.nodes)
+      .links(graph.links)
+      .start();
+
+
+  
+
+  var vis = d3.select("#svg_donut");
+  var cScale = d3.scale.linear().domain([0, graph.terms.length]).range([0, 2 * Math.PI]);
+
+  var thing = 0
+
+var score = 10
+
+  var arc = d3.svg.arc()
+    .innerRadius(0)
+    .outerRadius(function(d) {return Math.sqrt(d[3]/Math.PI) * 10})
+    .startAngle(function(d){return cScale(d[0]);})
+    .endAngle(function(d){return cScale(d[1]);});
+
+
+var link2 = vis.selectAll(".link")
+      .data(graph.links)
+    .enter().append("line")
+      .attr("class", "link")
+      .style("stroke-width", function(d) { return Math.sqrt(d.value); })
+      .style('stroke', 'black')
+      .style('stroke-opacity', .5);
+
+var svg =  vis.selectAll(".node").data(graph.nodes)
+  .enter()
+  .append('svg')
+  .attr('class', 'node')
+  .call(force.drag)
+
+var g = svg.append('g')
+
+var circle = g.selectAll('.circle')
+              .data(function(d, i ){ score = d.angles[1]; return d.angles[0]})
+              .enter()
+              .append('path')
+              .attr('d', arc)
+              .style('fill', function(d, i){ return color[d[2]]})
+              .style('opacity', .7)
+              .style('stroke', "black")
+              .style('stroke-opacity', .3)
+              .attr("transform", "translate(10, 10)")
+
+svg.append("title")
+      .text(function(d) { return 'username:' + d.name + '\ntext:' + d.text; });
+var text2 = vis.selectAll('.text')
+    .data(graph.nodes)
+    .enter().append('text')
+    .attr('x', -10)
+    .attr('y', -10)
+    .style('font-family', 'Helvetica')
+    .style('font-color', 'red')
+    .style('font-size', '7px')
+    .text(function(d){ return d.name});
+
+  force.on("tick", function() {
+    link2.attr("x1", function(d) { return d.source.x + 10; })
+        .attr("y1", function(d) { return d.source.y + 10; })
+        .attr("x2", function(d) { return d.target.x + 10; })
+        .attr("y2", function(d) { return d.target.y + 10; });
+
+  svg.attr("x", function(d) { return d.x = Math.max(radius, Math.min(width - d.score, d.x)); })
+        .attr("y", function(d) { return d.y = Math.max(radius, Math.min(height - d.score, d.y)); });
+  text2
+    .attr('x', function(d) { return d.x = Math.max(radius, Math.min(width - d.score, d.x)) ; })
+    .attr("y", function(d) { return d.y = Math.max(radius, Math.min(height - d.score, d.y)) ; });
+
+  //.append("circle").attr('cx', 10).attr('cy', 10).attr('r', 10)
+  //.attr('id', 'HI THERE')
+  //.selectAll("path")
+  //.data(function(d, i) {return d.angles[0]})
+  //.append("path")
+  // .attr('id', function(d, i ) {return 'test' })
+  //.attr("d", arc)
+  //.style('fill', function(d, i) {return color[d[2]]})
+  //.append("path")
+  //.attr("d", "M 100 100 L 300 100 L 200 300 z")
+
+  //.attr("transform", function(d, i){return "translate(" + i * 10 + "," +  i *10 +")"});
+//}
+
+
+
+
+
+/*g.selectAll("path")
+.data(data)
+.enter()
+.append("path")
+.attr("d", arc)
+.style("fill", function(d){return d[2];})*/
+//.attr("transform", "translate(300,200)");
+
+/*vis.selectAll("use")
+  .data(data)
+  .enter()
+  .append("use")
+  .attr('x', function(d){return d[0] * 100})
+  .attr('y', function(d){return d[1] * 100})
+  .attr('xlink:href', function(d, i) {return '#test' + i})
+  .call(force.drag);*/
+
+
+
+ /* var link = svg_graph.selectAll(".link")
+      .data(graph.links)
+    .enter().append("line")
+      .attr("class", "link")
+      .style("stroke-width", function(d) { return Math.sqrt(d.value); })
+      .style('stroke', 'black')
+      .style('stroke-opacity', .3);*/
+
+  /*var node = svg.selectAll(".node")
+      .data(graph.nodes)
+    .enter().append("circle")
+      .attr("class", "node")
+      .attr("r", function(d) { return Math.sqrt(d.score/Math.PI) * 10})
+      .style("fill", function(d) {  return color[d.group[0]]; })
+      .style("opacity", 1)
+      .style("stroke", 'black')
+      .call(force.drag);*/
+
+ /* var node = svg_graph.selectAll(".node")
+      .data(graph.nodes)
+    .enter().append("circle")
+      .attr("class", "node")
+      .attr("r", function(d) { return Math.sqrt(d.score/Math.PI) * 10})
+      .style("fill", function(d) {  return color[d.group[0]]; })
+      .style("opacity", 1)
+      .style("stroke", 'black')
+      .call(force.drag);*/
+
+/*var circle = node.selectAll('circle')
+              .data(function(d, i){ return  d.angles[0]})
+              .enter()
+              .append('circle')
+              .style('stroke', function(d){ console.log(d); return 1})
+              .attr('r', 10)
+              .style('opacity', .2)
+              .style('fill', function(d){ return color[d[2]]})
+              .call(force.drag);*/
+
+ /* node.append("title")
+      .text(function(d) { return 'username:' + d.name + '\ntext:' + d.text; });
+
+  var text = svg_graph.selectAll('.text')
+    .data(graph.nodes)
+    .enter().append('text')
+    .attr('x', 100)
+    .attr('y', 100)
+    .style('font-family', 'Helvetica')
+    .style('font-color', 'red')
+    .style('font-size', '7px')
+    .text(function(d){ return d.tweets_in_text});*/
+
+ /* force.on("tick", function() {
+    link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });*/
+
+ /* node.attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - d.score, d.x)); })
+        .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - d.score, d.y)); });
+  text
+    .attr('x', function(d) { return d.x = Math.max(radius, Math.min(width - d.score, d.x)) ; })
+    .attr("y", function(d) { return d.y = Math.max(radius, Math.min(height - d.score, d.y)) ; });*/
+  });
+});}
+
+
+$scope.viz();
+}]);
+</script>
+
+
+
+</body>
+</html>
