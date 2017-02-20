@@ -51,8 +51,8 @@ for day in range(start_day, end_day):
 		daystring='0' + str(day)
 	else:
 		daystring=str(day)
-	#for hour in range(0, 24):
-	for hour in range(6, 18):
+	for hour in range(0, 24):
+	#test for hour in range(6, 18):
 		if hour < 10:
 				hourstring='0'+str(hour)
 		else:

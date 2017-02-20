@@ -40,6 +40,7 @@ def additional_group(value, additional_terms,term_type):
 	return [group_list, terms_list]
 
 def create_circle_lists(groups, list_of_terms):
+	print groups
 	ratio = (float(1)/float(len(groups))) * len(list_of_terms)
 	angles = []
 	#print ratio
@@ -47,7 +48,12 @@ def create_circle_lists(groups, list_of_terms):
 		angles.append([i * ratio, (i + 1) * ratio, groups[i], 1])
 	return angles
 
-
+def combine_no_duplicates(first, second):
+	for val1 in first:
+		for val2 in second:
+			if val1 == val2:
+				second.remove(val2)
+	return first + second
 
 def firstformat(start_day, end_day, search_terms, filename, search_type):
 	search_term = search_terms[0]
@@ -69,12 +75,11 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 						searchval['links'].append(d['retweeted_status']['user']['screen_name'])
 					searchval['score'] = searchval['score'] + 1
 					searchval['text'].append(d['text'])
-					for angle in angles:
-						angle[3] = angle[3] + 1
-					searchval['group'] = searchval['group'] + list(set(searchval['group']) - set(groups_in_tweet))#additional_group(d, additional_terms, search_type)
-					searchval['angles'][0] = create_circle_lists(searchval['group'], search_terms)
-					searchval['angles'][1] = searchval['score']
-					searchval['tweets_in_text'] = searchval['tweets_in_text'] + list(set(searchval['tweets_in_text']) - set(terms_in_tweet))
+					searchval['tweets_in_text'] = combine_no_duplicates(searchval['tweets_in_text'], terms_in_tweet)#list(set(searchval['tweets_in_text']) - set(terms_in_tweet))
+					searchval['group'] = combine_no_duplicates(searchval['group'], groups_in_tweet)
+					searchval['angles'] = create_circle_lists(searchval['group'], search_terms)
+					for angle in searchval['angles']:
+						angle[3] = searchval['score']
 				else:
 					if 'retweeted_status' not in d:
 						thing={
@@ -86,7 +91,7 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 							'url' : d['id'],
 							'index' : index,
 							'retweets' : 0,
-							'angles' : [angles, 1],
+							'angles' : angles,
 							'tweets_in_text': terms_in_tweet
 							}
 					else:
@@ -99,7 +104,7 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 							'url' : d['id'],
 							'index' : index,
 							'retweets' : 0,
-							'angles' : [angles, 1],
+							'angles' : angles,
 							'tweets_in_text': terms_in_tweet
 							}
 						addnode=search(day_user_data, d['retweeted_status']['user']['screen_name'])
@@ -114,7 +119,7 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 								'url' : d['retweeted_status']['id'],
 								'index' : index,
 								'retweets' : 0,
-								'angles' : [angles, 1],
+								'angles' : angles,
 								'tweets_in_text': terms_in_tweet
 								}
 							day_user_data.append(newnode)
@@ -122,11 +127,12 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 					day_user_data.append(thing)
 		print day
 	filename = 'all' + filename
+	#with open('half_formatted_data/half_formatted'+ str(start_day) + '-' + str(end_day) + '-' + filename +'.json', 'w') as outfile:
 	with open('twitter-network-creator/half_formatted_data/half_formatted'+ str(start_day) + '-' + str(end_day) + '-' + filename +'.json', 'w') as outfile:
 		json.dump(day_user_data, outfile)
 	secondaryformat.secondformat(start_day, end_day, search_terms, filename)
 
-firstformat(10, 11, ['BlackLivesMatter', 'AllLivesMatter', 'MichaelBrown', 'FergusonPolice'], 'BlackLivesMatterAllLivesMatterMichaelBrownFergusonPolice', 'hashtag')
+#firstformat(10, 11, ['BlackLivesMatter', 'AllLivesMatter', 'MichaelBrown', 'FergusonPolice'], 'BlackLivesMatterAllLivesMatterMichaelBrownFergusonPolice', 'hashtag')
 
 	   # for x in day_user_data:
 		#	if len(x['links']) > 1:
