@@ -61,7 +61,7 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 	day_user_data=[]
 	index = 0
 	for day in range(start_day, end_day):
-		with open('twitter-network-creator/filtered_data/all'+str(day)+filename+'.json') as data_file:
+		with open('twitter-network-creator/filtered_data/'+str(day)+filename+'.json') as data_file:
 		#with open('filtered_data/all10BlackLivesMatterAllLivesMatterMichaelBrownFergusonPolice.json') as data_file:	 
 			data = json.load(data_file)
 			for d in data:
@@ -70,6 +70,10 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 				groups_in_tweet = sub_searched[0]
 				terms_in_tweet = sub_searched[1]
 				angles =  create_circle_lists(groups_in_tweet, search_terms)
+				if 'created_at' in d:
+					time_created = d['created_at']
+				else:
+					time_created = ''
 				if searchval != -1:
 					if 'retweeted_status' in d:
 						searchval['links'].append(d['retweeted_status']['user']['screen_name'])
@@ -80,6 +84,7 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 					searchval['angles'] = create_circle_lists(searchval['group'], search_terms)
 					for angle in searchval['angles']:
 						angle[3] = searchval['score']
+					searchval['created_at'].append(time_created)
 				else:
 					if 'retweeted_status' not in d:
 						thing={
@@ -92,7 +97,9 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 							'index' : index,
 							'retweets' : 0,
 							'angles' : angles,
-							'tweets_in_text': terms_in_tweet
+							'tweets_in_text': terms_in_tweet,
+							'time': [time_created]
+
 							}
 					else:
 						thing={
@@ -105,7 +112,8 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 							'index' : index,
 							'retweets' : 0,
 							'angles' : angles,
-							'tweets_in_text': terms_in_tweet
+							'tweets_in_text': terms_in_tweet,
+							'time': [time_created]
 							}
 						addnode=search(day_user_data, d['retweeted_status']['user']['screen_name'])
 						if addnode == -1:
@@ -120,13 +128,13 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 								'index' : index,
 								'retweets' : 0,
 								'angles' : angles,
-								'tweets_in_text': terms_in_tweet
+								'tweets_in_text': terms_in_tweet,
+								'time': [time_created]
 								}
 							day_user_data.append(newnode)
 					index = index + 1
 					day_user_data.append(thing)
 		print day
-	filename = 'all' + filename
 	#with open('half_formatted_data/half_formatted'+ str(start_day) + '-' + str(end_day) + '-' + filename +'.json', 'w') as outfile:
 	with open('twitter-network-creator/half_formatted_data/half_formatted'+ str(start_day) + '-' + str(end_day) + '-' + filename +'.json', 'w') as outfile:
 		json.dump(day_user_data, outfile)

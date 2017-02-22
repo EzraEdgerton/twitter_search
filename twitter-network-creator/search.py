@@ -4,7 +4,7 @@
 import sys
 import os
 import json
-import initialformat
+import allinitialformat
 import secondaryformat
 import twitter_folder_change
 
@@ -22,15 +22,16 @@ additional_terms = []
 filename = search_term
 
 if argument_len > 5: 
-	for i in range(5, argument_len):
+	for i in range(5, argument_len - 1):
 		additional_terms.append(sys.argv[i])
+sub_search_type = sys.argv[argument_len - 1]
 
 for i in additional_terms:
 	filename = filename + i
 
 print filename
 
-search_term = initialformat.typecheck(search_type,search_term)
+search_term = allinitialformat.typecheck(search_type,search_term)
 
 
 twitter_folder_change.network_directory_parent()
@@ -74,7 +75,9 @@ for day in range(start_day, end_day):
 
 	with open('twitter-network-creator/filtered_data/'+str(day)+filename + '.json', 'w') as outfile:
 		json.dump(tweets, outfile, indent=4)
-
-initialformat.firstformat(start_day, end_day, search_term, additional_terms, filename)
+search_terms = [search_term]
+for i in additional_terms:
+	search_terms.append(i)
+allinitialformat.firstformat(start_day, end_day, search_terms, filename, sub_search_type)
 
 

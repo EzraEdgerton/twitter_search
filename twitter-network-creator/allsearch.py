@@ -29,21 +29,33 @@ def search(values, searchFor):
 search_terms = []
 
 filename = ''
+start_args = 3
+all_search = False
+if sys.argv[3] == '-a' or sys.argv[3] == '-all':
+	start_args = 4
+	all_search = True
 
-for i in range(3, argument_len - 1):
+for i in range(start_args, argument_len - 1):
 	filename = filename + sys.argv[i]
 	
-for i in range(3, argument_len - 1):
+for i in range(start_args, argument_len - 1):
 	search_terms.append(allinitialformat.typecheck(search_type, sys.argv[i]))
 
+if all_search:
+	search_terms_two = search_terms
+else:
+	search_terms_two = [search_terms[0]]
 
 
 print filename
+
+print search_terms_two
 
 #search_term = allinitialformat.typecheck(search_type,search_term)
 
 
 twitter_folder_change.network_directory_parent()
+
 
 for day in range(start_day, end_day):
 	tweets=[]
@@ -67,7 +79,7 @@ for day in range(start_day, end_day):
 			print str(day)+'/'+hourstring+'/'+minutestring
 			for line in open(daystring+'/'+hourstring+'/'+minutestring, 'r'):
 				tweet = json.loads(line)
-				for search_term in search_terms:
+				for search_term in search_terms_two:
 					if search_type == 'username':
 						if 'user' not in tweet:
 							continue
@@ -84,8 +96,9 @@ for day in range(start_day, end_day):
 								print tweet["text"]
 								tweets.append(tweet)
 
-
-	with open('twitter-network-creator/filtered_data/all'+str(day)+filename + '.json', 'w') as outfile:
+	if all_search:
+		filename = 'all' + filename
+	with open('twitter-network-creator/filtered_data/'+str(day)+filename + '.json', 'w') as outfile:
 		json.dump(tweets, outfile, indent=4)
 
 allinitialformat.firstformat(start_day, end_day, search_terms, filename, search_type)
