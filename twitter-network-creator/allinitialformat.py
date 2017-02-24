@@ -84,7 +84,7 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 					searchval['angles'] = create_circle_lists(searchval['group'], search_terms)
 					for angle in searchval['angles']:
 						angle[3] = searchval['score']
-					searchval['created_at'].append(time_created)
+					searchval['time'].append(time_created)
 				else:
 					if 'retweeted_status' not in d:
 						thing={

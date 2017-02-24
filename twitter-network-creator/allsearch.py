@@ -49,6 +49,9 @@ else:
 
 print filename
 
+if all_search:
+		filename = 'all' + filename
+
 print search_terms_two
 
 #search_term = allinitialformat.typecheck(search_type,search_term)
@@ -96,8 +99,7 @@ for day in range(start_day, end_day):
 								print tweet["text"]
 								tweets.append(tweet)
 
-	if all_search:
-		filename = 'all' + filename
+	
 	with open('twitter-network-creator/filtered_data/'+str(day)+filename + '.json', 'w') as outfile:
 		json.dump(tweets, outfile, indent=4)
 
