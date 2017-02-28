@@ -1,4 +1,4 @@
-# All this created by Ezra Edgerton June 2016 - February 2017 for the University of Cincinnati. Copyright etc. to me.
+# All this created by Ezra Edgerton June 2016 - February 2017 for the University of Cincinnati. Copyright Free Software Copyright etc. to me.
 #
 #
 import sys
@@ -13,7 +13,6 @@ import twitter_folder_change
 start_day =  int(sys.argv[1])
 end_day = int(sys.argv[2])
 
-#search_term = sys.argv[3]
 
 argument_len = len(sys.argv)
 
@@ -24,7 +23,6 @@ def search(values, searchFor):
     	if k == searchFor:
     		return k
     return -1 
-
 
 search_terms = []
 
@@ -53,8 +51,6 @@ if all_search:
 		filename = 'all' + filename
 
 print search_terms_two
-
-#search_term = allinitialformat.typecheck(search_type,search_term)
 
 
 twitter_folder_change.network_directory_parent()
@@ -91,13 +87,25 @@ for day in range(start_day, end_day):
 								print tweet["text"]
 								print tweet['user']['screen_name']
 								tweets.append(tweet)
-					else:
+					if search_type == 'text':
 						if "text" not in tweet:
 							continue
 						if tweet["text"].find(search_term) != -1:
 							if search(tweets, tweet) == -1:
 								print tweet["text"]
 								tweets.append(tweet)
+					if search_type == 'hashtag':
+						if "entities" not in tweet:
+							continue
+						entities = tweet['entities']
+						
+						if "hashtags" not in entities:
+							continue
+						for tag in entities['hashtags']:
+							if tag['text'] == search_term:
+								if search(tweets, tweet) == -1:
+									print tweet['text']
+									tweets.append(tweet)
 
 	
 	with open('twitter-network-creator/filtered_data/'+str(day)+filename + '.json', 'w') as outfile:

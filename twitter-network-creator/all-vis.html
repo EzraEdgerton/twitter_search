@@ -8,15 +8,19 @@
 <body ng-app="twitterstuff">
 <div ng-controller="twitterselect">
 
-<h1>
-Plant Genetics Author Country Link Graph
-</h1>
 <!-- <h4>Change Field</h4>
           <select ng-model="field" ng-options="m for m in fields" ng-change="viz()"></select>-->
+<div style="padding-top: 10px; padding-left: 10px">
 
-<svg id="svg_donut" width='1000px' height='1000px'></svg>
-
+<h1 style='font-family: Helvetica'>
+Mike Brown Shooting Twitter Networks
+</h1>
 <div id="graph"></div>
+<div id="network"></div>
+</div>
+<!--<svg id="svg_donut" width='1000px' height='1000px'></svg>-->
+
+
 
 </div>
 </div>
@@ -29,7 +33,7 @@ Plant Genetics Author Country Link Graph
 
 <script>
 
-var vis = d3.select("#svg_donut");
+//var vis = d3.select("#svg_donut");
 
 var termiteTopics = angular.module('twitterstuff', [], function($locationProvider) {
   $locationProvider.html5Mode(true);
@@ -52,7 +56,7 @@ var width = 1000,
 
 
 
-var color = ['black', 'red', 'green', 'blue', 'yellow', 'white', 'orange', 'purple']
+var color = ['lightgreen', 'red', 'green', 'blue', 'yellow', 'white', 'orange', 'purple', 'pink', 'brown', 'lightgrey', 'darkred', 'darkblue']
 
 /*$scope.days=[]
 for(var i = 23; i < 31; i++){
@@ -60,45 +64,112 @@ for(var i = 23; i < 31; i++){
 }
 
 $scope.day = 23*/
+var origin = 35
 
 var force = d3.layout.force()
   .charge(charge)
   .linkDistance(linkDistance)
-    .size([width, height]);
+    .size([width - origin, height - origin]);
 
 
 
 $scope.viz = function(){
-  d3.select('#network').remove()
+ // d3.select('#network').remove()
 
-var svg_graph = d3.select("#graph").append("svg")
-  .attr("xmlns","http://www.w3.org/2000/svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr('id', 'network');
+
+    //.attr('id', 'network')
+   // .attr('transform', 'translate(-35, -35)');
 
 //d3.json("/formatted_data/formatted9-13-allBlackLivesMatterMikeBrownAllLivesMatterMichaelBrownFergusonPolice.json", function(error, graph) {
-  d3.json("/formatted_data/formatted9-10-allBlackLivesMatterEricGarnerMikeBrownFergusonPolice.json", function(error, graph) {
+  d3.json("/formatted_data/test.json", function(error, graph) {
   force
       .nodes(graph.nodes)
       .links(graph.links)
       .start();
+var labelcols = 4
+var square = 15
 
 
-  
 
-  var vis = d3.select("#svg_donut");
+
+  var svg_labels = d3.select("#graph").append("svg")
+    .attr("width", 1000)
+    .attr("height", (graph.terms.length /labelcols) * 50)
+
+
+function labely(i, text){
+  var row = 35
+  var sq = square 
+  if(text){
+    sq  = 0
+}
+
+ // var row = 20
+  if( i < 4){
+    return row - sq
+  }
+  if( i < 8){
+    return row * 2  - sq
+  }
+  if( i < 12){
+    return row * 3 - sq
+  }
+  if( i < 16){
+    return row * 4 - sq
+  }
+  if( i < 20){
+    return row * 5 - sq
+  }
+}
+
+  var labeltext = svg_labels.selectAll('text')
+          .data(graph.terms)
+          .enter()
+          .append('text')
+          .style('font-family', 'Helvetica')
+          .attr('x', function(d, i) { return 25 + 250 *  (i % labelcols)})
+          .attr('y', function(d, i) { return labely(i, true)})
+          .text(function(d){return d})
+
+var labelsquares = svg_labels.selectAll('rect')
+          .data(graph.terms)
+          .enter()
+          .append('rect')
+          .style('fill', function(d, i){return color[i]})
+          .style('stroke', 'black')
+          .style('stroke-width', .5)
+          .attr('x', function(d, i) { return 250 *  (i % labelcols)})
+          .attr('y', function(d, i) { return labely(i, false)})
+          .attr('height', square)
+          .attr('width', square)
+          .attr('fill-opacity', .7)
+         // .text(function(d){return d})
+
+
+  var visouter = d3.select("#network").append("svg")
+    .attr('width', width)
+    .attr('height', height)
+    .attr('id', 'svg_network')
+
+  var vis = d3.select('#svg_network').append("svg")
+    .attr('width', width)
+    .attr('height', height )
+    //.attr('transform', 'translate(100, 100)');
   var cScale = d3.scale.linear().domain([0, graph.terms.length]).range([0, 2 * Math.PI]);
-
-  var thing = 0
-
-var score = 10
 
   var arc = d3.svg.arc()
     .innerRadius(0)
     .outerRadius(function(d) {return Math.sqrt(d[3]/Math.PI) * 10})
     .startAngle(function(d){return cScale(d[0]);})
+    .endAngle(function(d){return cScale(d[1]);})
+
+var arc2 = d3.svg.arc()
+    .innerRadius(0)
+    .outerRadius(30)
+    .startAngle(function(d){return cScale(d[0]);})
     .endAngle(function(d){return cScale(d[1]);});
+
+
 
 
 var link2 = vis.selectAll(".link")
@@ -112,46 +183,86 @@ var link2 = vis.selectAll(".link")
 var svg =  vis.selectAll(".node").data(graph.nodes)
   .enter()
   .append('svg')
-  .attr('class', 'node')
+  .attr('class', function(d){return 'node ' + d.index})
   .call(force.drag)
 
-var g = svg.append('g')
+//var g = svg.append('g')
 
-var circle = g.selectAll('.circle')
-              .data(function(d, i ){ score = d.angles; return d.angles})
+
+var circle = svg.selectAll('.circle')//.attr("transform", 'translate(' + origin + ',' + origin + ')')
+
+function enlargeNode(){
+ // var node = d3.selectAll(this.childNodes)
+  node = d3.select(this)
+ 
+  var selnode = d3.select(this).selectAll('path').transition()//.select('path').transition()
+  if (node.attr('class') == 'big'){
+     selnode
+    .duration(250)
+    .attr('d', arc)
+    .style('opacity', .7);
+    node.select('text').style('display', '')
+  node.attr('class', 'small')
+   node.select('text').attr('display', 'none')
+  }
+  else{
+  selnode
+    .duration(250)
+    .attr('d', arc2)
+    .style('opacity', .7);
+  node.attr('class', 'big')
+   node.select('text').attr('display', '')
+  }
+  return
+}
+
+circle.data(function(d, i ){ return d.angles })
               .enter()
               .append('path')
+              .attr('class', function(d){ return 'arccircle';})
+
               .attr('d', arc)
               .style('fill', function(d, i){ return color[d[2]]})
               .style('opacity', .7)
               .style('stroke', "black")
               .style('stroke-opacity', .3)
-              .attr("transform", "translate(10, 10)")
+              .attr("transform", 'translate(' + origin + ',' + origin + ')')
+
+svg.on('click', enlargeNode)
+
+function showInfo(){
+  console.log('hello there')
+  d3.select(this).append('text')
+    .text('HELLO THERE')
+}
+
+svg.on('mouseover', showInfo)
+    
+var text3 = svg.append('text')
+          .attr('x', 0)
+          .attr('y', 0)
+           .style('font-family', 'Helvetica')
+          .style('font-size', '14px')
+          .text(function(d){return d.name;})
+          .attr('display', 'none')
+           .attr('transform', 'translate(' + origin +','+ origin + ')')
+
 
 svg.append("title")
       .text(function(d) { return 'username:' + d.name + '\ntext:' + d.text; });
-var text2 = vis.selectAll('.text')
-    .data(graph.nodes)
-    .enter().append('text')
-    .attr('x', -10)
-    .attr('y', -10)
-    .style('font-family', 'Helvetica')
-    .style('font-color', 'red')
-    .style('font-size', '7px')
-    .attr('transform', 'translate(15, 10)')
-    .text(function(d){ return d.name});
+
 
   force.on("tick", function() {
-    link2.attr("x1", function(d) { return d.source.x + 10; })
-        .attr("y1", function(d) { return d.source.y + 10; })
-        .attr("x2", function(d) { return d.target.x + 10; })
-        .attr("y2", function(d) { return d.target.y + 10; });
+    link2.attr("x1", function(d) { return d.source.x + origin; })
+        .attr("y1", function(d) { return d.source.y + origin; })
+        .attr("x2", function(d) { return d.target.x + origin; })
+        .attr("y2", function(d) { return d.target.y + origin; });
 
-  svg.attr("x", function(d) { return d.x = Math.max(radius, Math.min(width - d.score, d.x)); })
-        .attr("y", function(d) { return d.y = Math.max(radius, Math.min(height - d.score, d.y)); });
-  text2
+  svg.attr("x", function(d) { return d.x = Math.max(radius, Math.min(width - (origin + 5) - d.score, d.x)); })
+        .attr("y", function(d) { return d.y = Math.max(radius, Math.min(height-(origin + 5)  -d.score, d.y)); });
+ /* text3
     .attr('x', function(d) { return d.x = Math.max(radius, Math.min(width - d.score, d.x)) ; })
-    .attr("y", function(d) { return d.y = Math.max(radius, Math.min(height - d.score, d.y)) ; });
+    .attr("y", function(d) { return d.y = Math.max(radius, Math.min(height -d.score, d.y)) ; });*/
 
  
   });

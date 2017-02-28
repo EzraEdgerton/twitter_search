@@ -6,7 +6,7 @@ import twitter_folder_change
 
 def typecheck(term_type, term):
 	if term_type == 'hashtag':
-		return '#' + term
+		return term
 	elif term_type == 'username' or term_type == 'text':
 		return term
 	else:
@@ -18,34 +18,42 @@ def search(values, searchFor):
 			return k
 	return -1
 
+
 def additional_group(value, additional_terms,term_type):
+	print value['text']
 	terms_number = len(additional_terms)
 	group = 0
 	finder = ''
 	group_list = []
 	terms_list = []
 	for i in range(0, terms_number):
-		if term_type == 'text' or term_type == 'hashtag':
+		if term_type == 'text':
 			val = value['text'].find(additional_terms[i])
 			if val!= -1:
-				group = group + i
-				finder = value['text'][val: val + 2]
+				#group = group + i
+				#finder = value['text'][val: val + 2]
 				group_list.append(i)
 				terms_list.append(additional_terms[i])
 				#print finder
+		if term_type == 'hashtag':
+			for tag in value['entities']['hashtags']:
+				if tag['text'] == additional_terms[i]:
+					group_list.append(i)
+					terms_list.append(additional_terms[i])
 		if term_type == 'username':
 			if value['user']['screen_name'].find(additional_terms[i]) != -1:
-				group = i
+				group_list.append(i)
+				terms_list.append(additional_terms[i])
 	print terms_list
 	return [group_list, terms_list]
 
-def create_circle_lists(groups, list_of_terms):
+def create_circle_lists(groups, list_of_terms, index):
 	print groups
 	ratio = (float(1)/float(len(groups))) * len(list_of_terms)
 	angles = []
 	#print ratio
 	for i in range(0, len(groups)):
-		angles.append([i * ratio, (i + 1) * ratio, groups[i], 1])
+		angles.append([i * ratio, (i + 1) * ratio, groups[i], 1, index])
 	return angles
 
 def combine_no_duplicates(first, second):
@@ -61,7 +69,8 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 	day_user_data=[]
 	index = 0
 	for day in range(start_day, end_day):
-		with open('twitter-network-creator/filtered_data/'+str(day)+filename+'.json') as data_file:
+		#with open('twitter-network-creator/filtered_data/'+str(day)+filename+'.json') as data_file:
+		with open('filtered_data/'+str(day)+filename+'.json') as data_file:
 		#with open('filtered_data/all10BlackLivesMatterAllLivesMatterMichaelBrownFergusonPolice.json') as data_file:	 
 			data = json.load(data_file)
 			for d in data:
@@ -69,7 +78,7 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 				sub_searched = additional_group(d, additional_terms, search_type)
 				groups_in_tweet = sub_searched[0]
 				terms_in_tweet = sub_searched[1]
-				angles =  create_circle_lists(groups_in_tweet, search_terms)
+				angles =  create_circle_lists(groups_in_tweet, search_terms, index)
 				if 'created_at' in d:
 					time_created = d['created_at']
 				else:
@@ -81,7 +90,7 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 					searchval['text'].append(d['text'])
 					searchval['tweets_in_text'] = combine_no_duplicates(searchval['tweets_in_text'], terms_in_tweet)#list(set(searchval['tweets_in_text']) - set(terms_in_tweet))
 					searchval['group'] = combine_no_duplicates(searchval['group'], groups_in_tweet)
-					searchval['angles'] = create_circle_lists(searchval['group'], search_terms)
+					searchval['angles'] = create_circle_lists(searchval['group'], search_terms, index)
 					for angle in searchval['angles']:
 						angle[3] = searchval['score']
 					searchval['time'].append(time_created)
@@ -135,13 +144,19 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 					index = index + 1
 					day_user_data.append(thing)
 		print day
-	#with open('half_formatted_data/half_formatted'+ str(start_day) + '-' + str(end_day) + '-' + filename +'.json', 'w') as outfile:
-	with open('twitter-network-creator/half_formatted_data/half_formatted'+ str(start_day) + '-' + str(end_day) + '-' + filename +'.json', 'w') as outfile:
+	with open('half_formatted_data/half_formatted'+ str(start_day) + '-' + str(end_day) + '-' + filename +'.json', 'w') as outfile:
+	#with open('twitter-network-creator/half_formatted_data/half_formatted'+ str(start_day) + '-' + str(end_day) + '-' + filename +'.json', 'w') as outfile:
 		json.dump(day_user_data, outfile)
 	secondaryformat.secondformat(start_day, end_day, search_terms, filename)
 
-#firstformat(10, 11, ['BlackLivesMatter', 'AllLivesMatter', 'MichaelBrown', 'FergusonPolice'], 'BlackLivesMatterAllLivesMatterMichaelBrownFergusonPolice', 'hashtag')
 
+#firstformat(9, 17, ['BlackLivesMatter', 'MichaelBrown', 'HandsUpDontShoot', ], 'BlackLivesMatterAllLivesMatterMichaelBrownFergusonPolice', 'hashtag')
+
+#start = 17
+#end = 18
+#name = 'allBlackLivesMatterMichaelBrownHandsUpDontShootEricGarnerICantBreatheFergusonPoliceAllLivesMatterMikeBrownJusticeForMichaelBrownIfTheyGunnedMeDownFergusonIfIWasGunnedDownDONTSHOOTMyaWhiteJusticeForMikeBrown'
+#terms = ['BlackLivesMatter','MichaelBrown','HandsUpDontShoot','EricGarner','ICantBreathe','FergusonPolice','AllLivesMatter','MikeBrown','JusticeForMichaelBrown','IfTheyGunnedMeDown','Ferguson','IfIWasGunnedDown','DONTSHOOT','MyaWhite','JusticeForMikeBrown']
+#firstformat(start, end, terms, name, 'hashtag')
 	   # for x in day_user_data:
 		#	if len(x['links']) > 1:
 		#		print x['links']
