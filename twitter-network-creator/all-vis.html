@@ -16,7 +16,7 @@
 Mike Brown Shooting Twitter Networks
 </h1>
 <div id="graph"></div>
-<div id="network"></div>
+<div id="network" style="padding-left: -100px"></div>
 </div>
 <!--<svg id="svg_donut" width='1000px' height='1000px'></svg>-->
 
@@ -40,8 +40,8 @@ var termiteTopics = angular.module('twitterstuff', [], function($locationProvide
 });
 
 termiteTopics.controller('twitterselect',['$scope', function($scope){
-var width = 1000,
-    height = 1000,
+var width = 1200,
+    height = 1200,
     radius = 4,
     charge = -50,
     linkDistance = 20;
@@ -57,14 +57,15 @@ var width = 1000,
 
 
 var color = ['lightgreen', 'red', 'green', 'blue', 'yellow', 'white', 'orange', 'purple', 'pink', 'brown', 'lightgrey', 'darkred', 'darkblue']
-
+//var color = d3.scale.category20c();
+//console.log(color)
 /*$scope.days=[]
 for(var i = 23; i < 31; i++){
   $scope.days.push(i)
 }
 
 $scope.day = 23*/
-var origin = 35
+var origin = 220
 
 var force = d3.layout.force()
   .charge(charge)
@@ -89,6 +90,7 @@ $scope.viz = function(){
 var labelcols = 4
 var square = 15
 
+var textboxwidth = 170;
 
 
 
@@ -122,7 +124,7 @@ function labely(i, text){
   }
 }
 
-  var labeltext = svg_labels.selectAll('text')
+var labeltext = svg_labels.selectAll('text')
           .data(graph.terms)
           .enter()
           .append('text')
@@ -143,18 +145,20 @@ var labelsquares = svg_labels.selectAll('rect')
           .attr('height', square)
           .attr('width', square)
           .attr('fill-opacity', .7)
-         // .text(function(d){return d})
 
 
   var visouter = d3.select("#network").append("svg")
     .attr('width', width)
     .attr('height', height)
+
     .attr('id', 'svg_network')
 
   var vis = d3.select('#svg_network').append("svg")
     .attr('width', width)
     .attr('height', height )
-    //.attr('transform', 'translate(100, 100)');
+     .attr('x', -1 * origin + 10)
+    .attr('y', -1 * origin + 10)
+
   var cScale = d3.scale.linear().domain([0, graph.terms.length]).range([0, 2 * Math.PI]);
 
   var arc = d3.svg.arc()
@@ -184,16 +188,38 @@ var svg =  vis.selectAll(".node").data(graph.nodes)
   .enter()
   .append('svg')
   .attr('class', function(d){return 'node ' + d.index})
+  //.style('color', function(d){return d.group[0]})
   .call(force.drag)
 
-//var g = svg.append('g')
 
 
-var circle = svg.selectAll('.circle')//.attr("transform", 'translate(' + origin + ',' + origin + ')')
+var circle = svg.selectAll('.circle')
 
 function enlargeNode(){
- // var node = d3.selectAll(this.childNodes)
+
   node = d3.select(this)
+  tweetbox = node.select('.tweetbox')
+  tweettext = node.select('.tweettext')
+
+  //console.log(tweettext.style('display'))
+
+  if (node.attr('x') < width/2 - origin){
+    tweetbox.attr('x', 15)
+    tweettext.attr('x', 15)
+  }
+  else{
+    tweetbox.attr('x', -textboxwidth - 15)
+    tweettext.attr('x', -textboxwidth - 15)
+  }
+  if (node.attr('y') < height/2 - origin){
+    tweetbox.attr('y', 0)
+    tweettext.attr('y', 0)
+  }
+  else{
+    tweetbox.attr('y', -50)
+    tweettext.attr('y', -50)
+  }
+
  
   var selnode = d3.select(this).selectAll('path').transition()//.select('path').transition()
   if (node.attr('class') == 'big'){
@@ -201,21 +227,40 @@ function enlargeNode(){
     .duration(250)
     .attr('d', arc)
     .style('opacity', .7);
-    node.select('text').style('display', '')
   node.attr('class', 'small')
-   node.select('text').attr('display', 'none')
+   node.select('.tweetbox').transition()
+    .duration(250).attr('display', 'none')
+    tweettext.style('display', 'none')
   }
   else{
   selnode
     .duration(250)
     .attr('d', arc2)
-    .style('opacity', .7);
+    .style('opacity', 1);
   node.attr('class', 'big')
-   node.select('text').attr('display', '')
+   node.select('.tweetbox').transition()
+    .duration(250).attr('display', '')
+
+    tweettext.style('display', '')
+
   }
   return
 }
 
+function showName(){
+  node = d3.select(this)
+  node.style('opacity', 1)
+  node.select('.nametext').attr('display', '')
+}
+
+function hideName(){
+  node = d3.select(this)
+ // if (node.attr('class') != 'big'){
+      node.style('opacity', .7)
+ // }
+
+  node.select('.nametext').attr('display', 'none')
+}
 circle.data(function(d, i ){ return d.angles })
               .enter()
               .append('path')
@@ -230,17 +275,61 @@ circle.data(function(d, i ){ return d.angles })
 
 svg.on('click', enlargeNode)
 
-function showInfo(){
-  console.log('hello there')
-  d3.select(this).append('text')
-    .text('HELLO THERE')
-}
 
-svg.on('mouseover', showInfo)
+
+svg.on('mouseover', showName)
+  .on('mouseout', hideName)
+
+
+var tweetbox = svg.append('rect')
+            .attr('class', 'tweetbox')
+            .attr('x', 15)
+            .attr('y', 0)
+            .attr('width', textboxwidth)
+            .attr('height', function(d){
+              return d.text.length * 80
+            })
+            .style('stroke', 'grey')
+            .style('fill', function(d){return color[d.group[0]]})
+            //.style('fill', 'white')
+            .style('fill-opacity', 1)
+            .attr('display', 'none')
+             .attr('transform', 'translate(' + origin +','+ origin + ')')
+
+var tweettext = svg.append("foreignObject")
+  //.attr({width: textboxwidth, height: 50})
+  .attr('width', textboxwidth)
+  .attr('height', function(d){
+              return d.text.length *70
+            })
+  .style('color', "white")//function(d){return color[d.group[0]]})
+  .style('fill-opacity', 1)
+  .style('display', 'none')
+  .attr('class', 'tweettext')
+  .attr('x', 0 + 'px')
+  .attr('y', '0px')
+  .attr('transform', 'translate(' + origin +','+ origin + ')')
+  .style({width: textboxwidth + 'px', 
+        height: 70 + 'px', 
+        "font-size": "11px",
+        "font-family": "Helvetica",
+        "fill": 'red'
+    })
+    .html(function(d){
+      text = d.name + ':'
+      d.text.forEach(function(entry){
+        text = text + '\n' + entry
+      })
+
+      return text
+    });
+
+
     
 var text3 = svg.append('text')
           .attr('x', 0)
           .attr('y', 0)
+          .attr('class', 'nametext')
            .style('font-family', 'Helvetica')
           .style('font-size', '14px')
           .text(function(d){return d.name;})
@@ -248,8 +337,8 @@ var text3 = svg.append('text')
            .attr('transform', 'translate(' + origin +','+ origin + ')')
 
 
-svg.append("title")
-      .text(function(d) { return 'username:' + d.name + '\ntext:' + d.text; });
+/*svg.append("title")
+      .text(function(d) { return 'username:' + d.name + '\ntext:' + d.text; });*/
 
 
   force.on("tick", function() {
@@ -260,11 +349,7 @@ svg.append("title")
 
   svg.attr("x", function(d) { return d.x = Math.max(radius, Math.min(width - (origin + 5) - d.score, d.x)); })
         .attr("y", function(d) { return d.y = Math.max(radius, Math.min(height-(origin + 5)  -d.score, d.y)); });
- /* text3
-    .attr('x', function(d) { return d.x = Math.max(radius, Math.min(width - d.score, d.x)) ; })
-    .attr("y", function(d) { return d.y = Math.max(radius, Math.min(height -d.score, d.y)) ; });*/
 
- 
   });
 });}
 
