@@ -1,362 +1,452 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-
+<!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8" />
+ <link rel="stylesheet" href="/ext/css/d3.slider.css"/>  
+ <link rel="stylesheet" href="/ext/css/bootstrap.min.css"/>  
+ <style>
 
-
+ </style>
+ 
 </head>
 <body ng-app="twitterstuff">
-<div ng-controller="twitterselect">
+  <div class='container-fluid'>
+    <div ng-controller="twitterselect">
 
-<!-- <h4>Change Field</h4>
-          <select ng-model="field" ng-options="m for m in fields" ng-change="viz()"></select>-->
-<div style="padding-top: 10px; padding-left: 10px">
+    <!-- <h4>Change Field</h4>
+              <select ng-model="field" ng-options="m for m in fields" ng-change="viz()"></select>-->
 
-<h1 style='font-family: Helvetica'>
-Mike Brown Shooting Twitter Networks
-</h1>
-<div id="graph"></div>
-<div id="network" style="padding-left: -100px"></div>
-</div>
-<!--<svg id="svg_donut" width='1000px' height='1000px'></svg>-->
+      <div class='row'>
+        <div class='col-lg-12'>
+        <h1 style='font-family: Helvetica'>
+        Mike Brown Shooting Twitter Networks
+        </h1>
+        </div>
+      </div>
+      <div class='row'>
+       <div class='col-lg-12'>
+        <div id="graph"></div>
+        </div>
+      </div>
+    <div class='row'>
+     <div class='col-lg-12'>
+    <div id="sliderdiv" style="height: 100px">
 
+      <input ng-model="lowval" />
+      <input ng-model="highval" />
+      <input name="updateButton" 
+               type="button" 
+               value="Update" 
+               ng-click="updateData()" />
+      <input name="updateButton" 
+               type="button" 
+               value="Restore" 
+               ng-click="restoreData()" />
+      <input name="updateButton" 
+               type="button" 
+               value="Step Forward" 
+               ng-click="stepForward()" />
+      <!--  <h2>Range Slider with event, values: <span id="slider3textmin">{{lowval}}</span>, <span id="slider3textmax">{{highval}}</span></h2>
+        <code>d3.select('#slider3').call(d3.slider().axis(true).value( [ 10, 25 ] ).on("slide", function(evt, value) {<br>
+        &nbsp;&nbsp;d3.select('#slider3textmin').text(value[ 0 ]);<br />
+        &nbsp;&nbsp;d3.select('#slider3textmax').text(value[ 1 ]);<br>
+        })</code>
+        <div id="slider3"></div>-->
+      </div>
+    </div>
+    <div class="row">
+     <div class='col-lg-12'>
+    <div id="network" ></div>
+    </div>
+    </div>
 
-
-</div>
-</div>
-
-  <script src="/ext/d3.v3.min.js"></script>
-  <script src="/ext/angular.js"></script>
-  <script src="/ext/jquery.min.js"></script>
-
-
-
-<script>
-
-//var vis = d3.select("#svg_donut");
-
-var termiteTopics = angular.module('twitterstuff', [], function($locationProvider) {
-  $locationProvider.html5Mode(true);
-});
-
-termiteTopics.controller('twitterselect',['$scope', function($scope){
-var width = 1200,
-    height = 1200,
-    radius = 4,
-    charge = -50,
-    linkDistance = 20;
-    
-
-  charge = -40;
-
- // linkDistance = 0.5714285714285714;
-
-
-
-
-
-
-var color = ['lightgreen', 'red', 'green', 'blue', 'yellow', 'white', 'orange', 'purple', 'pink', 'brown', 'lightgrey', 'darkred', 'darkblue']
-//var color = d3.scale.category20c();
-//console.log(color)
-/*$scope.days=[]
-for(var i = 23; i < 31; i++){
-  $scope.days.push(i)
-}
-
-$scope.day = 23*/
-var origin = 220
-
-var force = d3.layout.force()
-  .charge(charge)
-  .linkDistance(linkDistance)
-    .size([width - origin, height - origin]);
+    <!--<svg id="svg_donut" width='1000px' height='1000px'></svg>-->
 
 
 
-$scope.viz = function(){
- // d3.select('#network').remove()
+    </div>
+  </div>
+    <script src="/ext/d3.v3.min.js"></script>
+    <script src="/ext/angular.js"></script>
+    <script src="/ext/jquery.min.js"></script>
+    <script src="/ext/d3.slider.js"></script>
+    <script src="/ext/bootstrap.min.js"></script>
 
 
-    //.attr('id', 'network')
-   // .attr('transform', 'translate(-35, -35)');
 
-//d3.json("/formatted_data/formatted9-13-allBlackLivesMatterMikeBrownAllLivesMatterMichaelBrownFergusonPolice.json", function(error, graph) {
-  d3.json("/formatted_data/test.json", function(error, graph) {
-  force
-      .nodes(graph.nodes)
-      .links(graph.links)
-      .start();
-var labelcols = 4
-var square = 15
 
-var textboxwidth = 170;
+  <script>
+
+  //var vis = d3.select("#svg_donut");
+
+  var termiteTopics = angular.module('twitterstuff', [], function($locationProvider) {
+    $locationProvider.html5Mode(true);
+  });
+
+  termiteTopics.controller('twitterselect',['$scope', function($scope){
+  var width = 1000,
+      height = 1000,
+      radius = 4,
+      charge = -1,
+      linkDistance = 20;
+      
+
+    charge = -15;
+
+    //linkDistance = 0.5714285714285714;
+    linkDistance = 15
+
+  //var color = ['lightgreen', 'red', 'green', 'blue', 'yellow', 'white', 'orange', 'purple', 'pink', 'brown', 'lightgrey', 'darkred', 'darkblue']
+  var color = d3.scale.category20();
+  /*$scope.days=[]
+  for(var i = 23; i < 31; i++){
+    $scope.days.push(i)
+  }
+  $scope.day = 23*/
+  var parseDate = d3.time.format("%a %b %d %X %Z %Y").parse;
+  var origin = 220
+  var slide_h = 100
+  var force = d3.layout.force()
+    .charge(charge)
+    .linkDistance(linkDistance)
+      .size([width - origin, height - origin]);
+
+
+
+  $scope.lowval = 0;
+  $scope.highval = 24;
+    /*d3.select('#slider3').call(d3.slider().axis(true).value( [ $scope.lowval, $scope.highval ] ).on("slide", function(evt, value) {
+       // d3.select('#slider3textmin').text(value[ 0 ]);
+       // d3.select('#slider3textmax').text(value[ 1 ]);
+      }));*/
+
+  $scope.viz = function(){
+   // d3.select('#network').remove()
+
+
+
+  //d3.json("/formatted_data/formatted9-13-allBlackLivesMatterMikeBrownAllLivesMatterMichaelBrownFergusonPolice.json", function(error, graph) {
+    d3.json("/formatted_data/test3.json", function(error, graph) {
+    force
+        .nodes(graph.nodes)
+        .links(graph.links)
+        .start();
+  var labelcols = 4
+  var square = 15
+
+  var textboxwidth = 170;
+
+  graph.nodes.forEach(function(node){
+    node.time.forEach(function(tim){
+      tim = parseDate(tim);
+    })
+  })
+
+  /*var svg_slider = d3.select('#slider').append("svg")
+      .attr("width", width)
+      .attr("height", slide_h)*/
+
+
+  //var x = d3.time.scale().range([0, width]);
+
+  //x.domain(d3.extent(graph.nodes, function(d) { return d.time[0]; }));
+
+  console.log(d3.extent(graph.nodes, function(d) { return d.time[0]; }))
 
 
 
   var svg_labels = d3.select("#graph").append("svg")
-    .attr("width", 1000)
-    .attr("height", (graph.terms.length /labelcols) * 50)
+      .attr("width", width)
+      .attr("height", (graph.terms.length /labelcols) * 50)
 
 
-function labely(i, text){
-  var row = 35
-  var sq = square 
-  if(text){
-    sq  = 0
-}
+  //format labels
+  function labely(i, text){
+    var row = 35
+    var sq = square 
+    if(text){
+      sq  = 0
+  }
+   // var row = 20
+    if( i < 4){
+      return row - sq
+    }
+    if( i < 8){
+      return row * 2  - sq
+    }
+    if( i < 12){
+      return row * 3 - sq
+    }
+    if( i < 16){
+      return row * 4 - sq
+    }
+    if( i < 20){
+      return row * 5 - sq
+    }
+  }
 
- // var row = 20
-  if( i < 4){
-    return row - sq
-  }
-  if( i < 8){
-    return row * 2  - sq
-  }
-  if( i < 12){
-    return row * 3 - sq
-  }
-  if( i < 16){
-    return row * 4 - sq
-  }
-  if( i < 20){
-    return row * 5 - sq
-  }
-}
+  var labeltext = svg_labels.selectAll('text')
+            .data(graph.terms)
+            .enter()
+            .append('text')
+            .style('font-family', 'Helvetica')
+            .attr('x', function(d, i) { return 25 + (width/4) *  (i % labelcols)})
+            .attr('y', function(d, i) { return labely(i, true)})
+            .text(function(d){return d})
 
-var labeltext = svg_labels.selectAll('text')
-          .data(graph.terms)
-          .enter()
-          .append('text')
-          .style('font-family', 'Helvetica')
-          .attr('x', function(d, i) { return 25 + 250 *  (i % labelcols)})
-          .attr('y', function(d, i) { return labely(i, true)})
-          .text(function(d){return d})
-
-var labelsquares = svg_labels.selectAll('rect')
-          .data(graph.terms)
-          .enter()
-          .append('rect')
-          .style('fill', function(d, i){return color[i]})
-          .style('stroke', 'black')
-          .style('stroke-width', .5)
-          .attr('x', function(d, i) { return 250 *  (i % labelcols)})
-          .attr('y', function(d, i) { return labely(i, false)})
-          .attr('height', square)
-          .attr('width', square)
-          .attr('fill-opacity', .7)
+  var labelsquares = svg_labels.selectAll('rect')
+            .data(graph.terms)
+            .enter()
+            .append('rect')
+            .style('fill', function(d, i){return color(i)})
+            .style('stroke', 'black')
+            .style('stroke-opacity', .3)
+            .attr('x', function(d, i) { return (width/4) *  (i % labelcols)})
+            .attr('y', function(d, i) { return labely(i, false)})
+            .attr('height', square)
+            .attr('width', square)
+            .attr('fill-opacity', 1)
 
 
   var visouter = d3.select("#network").append("svg")
-    .attr('width', width)
-    .attr('height', height)
+      .attr('width', width)
+      .attr('height', height)
 
-    .attr('id', 'svg_network')
+      .attr('id', 'svg_network')
 
   var vis = d3.select('#svg_network').append("svg")
-    .attr('width', width)
-    .attr('height', height )
-     .attr('x', -1 * origin + 10)
-    .attr('y', -1 * origin + 10)
+      .attr('width', width)
+      .attr('height', height )
+       .attr('x', -1 * origin + 10)
+      .attr('y', -1 * origin + 10)
 
   var cScale = d3.scale.linear().domain([0, graph.terms.length]).range([0, 2 * Math.PI]);
 
   var arc = d3.svg.arc()
-    .innerRadius(0)
-    .outerRadius(function(d) {return Math.sqrt(d[3]/Math.PI) * 10})
-    .startAngle(function(d){return cScale(d[0]);})
-    .endAngle(function(d){return cScale(d[1]);})
+      .innerRadius(0)
+      .outerRadius(function(d) {return Math.sqrt(d[3]/Math.PI) * 10})
+      .startAngle(function(d){return cScale(d[0]);})
+      .endAngle(function(d){return cScale(d[1]);})
 
-var arc2 = d3.svg.arc()
-    .innerRadius(0)
-    .outerRadius(30)
-    .startAngle(function(d){return cScale(d[0]);})
-    .endAngle(function(d){return cScale(d[1]);});
-
-
-
-
-var link2 = vis.selectAll(".link")
-      .data(graph.links)
-    .enter().append("line")
-      .attr("class", "link")
-      .style("stroke-width", function(d) { return Math.sqrt(d.value); })
-      .style('stroke', 'black')
-      .style('stroke-opacity', .5);
-
-var svg =  vis.selectAll(".node").data(graph.nodes)
-  .enter()
-  .append('svg')
-  .attr('class', function(d){return 'node ' + d.index})
-  //.style('color', function(d){return d.group[0]})
-  .call(force.drag)
+  var arc2 = d3.svg.arc()
+      .innerRadius(0)
+      .outerRadius(30)
+      .startAngle(function(d){return cScale(d[0]);})
+      .endAngle(function(d){return cScale(d[1]);});
 
 
 
-var circle = svg.selectAll('.circle')
 
-function enlargeNode(){
+  var link2 = vis.selectAll(".link")
+        .data(graph.links)
+      .enter().append("line")
+        .attr("class", "link")
+        .style("stroke-width", function(d) { return Math.sqrt(d.value); })
+        .style('stroke', 'black')
+        .style('stroke-opacity', .5);
 
-  node = d3.select(this)
-  tweetbox = node.select('.tweetbox')
-  tweettext = node.select('.tweettext')
+  var svg =  vis.selectAll(".node").data(graph.nodes)
+    .enter()
+    .append('svg')
+    .attr('class', function(d){return 'node ' + d.index})
+    //.style('color', function(d){return d.group[0]})
+    .call(force.drag)
 
-  //console.log(tweettext.style('display'))
 
-  if (node.attr('x') < width/2 - origin){
-    tweetbox.attr('x', 15)
-    tweettext.attr('x', 15)
+
+  var circle = svg.selectAll('.circle')
+
+  function enlargeNode(){
+
+    node = d3.select(this)
+    tweetbox = node.select('.tweetbox')
+    tweettext = node.select('.tweettext')
+
+    //console.log(tweettext.style('display'))
+
+    if (node.attr('x') < width/2 - origin){
+      tweetbox.attr('x', 15)
+      tweettext.attr('x', 15)
+    }
+    else{
+      tweetbox.attr('x', -textboxwidth - 15)
+      tweettext.attr('x', -textboxwidth - 15)
+    }
+    if (node.attr('y') < height/2 - origin){
+      tweetbox.attr('y', 0)
+      tweettext.attr('y', 0)
+    }
+    else{
+      tweetbox.attr('y', -50)
+      tweettext.attr('y', -50)
+    }
+
+   
+    var selnode = d3.select(this).selectAll('path').transition()
+    if (node.attr('class') == 'big'){
+       selnode
+      .duration(250)
+      .attr('d', arc)
+      .style('opacity', 1);
+    node.attr('class', 'small')
+     node.select('.tweetbox').transition()
+      .duration(250).attr('display', 'none')
+      tweettext.style('display', 'none')
+    }
+    else{
+    selnode
+      .duration(250)
+      .attr('d', arc2)
+      .style('opacity', 1);
+    node.attr('class', 'big')
+     node.select('.tweetbox').transition()
+      .duration(250).attr('display', '')
+
+      tweettext.style('display', '')
+
+    }
+    return
   }
-  else{
-    tweetbox.attr('x', -textboxwidth - 15)
-    tweettext.attr('x', -textboxwidth - 15)
-  }
-  if (node.attr('y') < height/2 - origin){
-    tweetbox.attr('y', 0)
-    tweettext.attr('y', 0)
-  }
-  else{
-    tweetbox.attr('y', -50)
-    tweettext.attr('y', -50)
+
+  function showName(){
+   
+    node = d3.select(this)
+    node.style('stroke-opacity', 1)
+    node.select('.nametext').attr('display', '')
   }
 
- 
-  var selnode = d3.select(this).selectAll('path').transition()//.select('path').transition()
-  if (node.attr('class') == 'big'){
-     selnode
-    .duration(250)
-    .attr('d', arc)
-    .style('opacity', .7);
-  node.attr('class', 'small')
-   node.select('.tweetbox').transition()
-    .duration(250).attr('display', 'none')
-    tweettext.style('display', 'none')
+  function hideName(){
+    node = d3.select(this)
+        node.style('stroke-opacity', .3)
+    node.select('.nametext').attr('display', 'none')
   }
-  else{
-  selnode
-    .duration(250)
-    .attr('d', arc2)
-    .style('opacity', 1);
-  node.attr('class', 'big')
-   node.select('.tweetbox').transition()
-    .duration(250).attr('display', '')
+   
+  $scope.restoreData = function(){
 
-    tweettext.style('display', '')
-
+    $scope.lowval = 0
+    $scope.highval = 24
+    $scope.updateData()
   }
-  return
-}
+  $scope.stepForward = function(){
+    $scope.lowval;
+    $scope.highval++;
+    $scope.updateData()
+  }
+  $scope.updateData = function(){
 
-function showName(){
-  node = d3.select(this)
-  node.style('opacity', 1)
-  node.select('.nametext').attr('display', '')
-}
+    console.log($scope.lowval)
+    console.log($scope.highval)
 
-function hideName(){
-  node = d3.select(this)
- // if (node.attr('class') != 'big'){
-      node.style('opacity', .7)
- // }
+  svg.transition().duration(250).attr('display', function(d){
+    var hour =  parseInt(d.time[0].slice(10, 13));
+    if(hour < $scope.lowval || hour > $scope.highval){
+      console.log(hour)
+      return 'none';
+    }
+    else{
+      return ''
+    }
+    })
+  }
+    
+  circle.data(function(d, i ){ return d.angles })
+                .enter()
+                .append('path')
+                .attr('class', function(d){ return 'arccircle';})
 
-  node.select('.nametext').attr('display', 'none')
-}
-circle.data(function(d, i ){ return d.angles })
-              .enter()
-              .append('path')
-              .attr('class', function(d){ return 'arccircle';})
+                .attr('d', arc)
+                .style('fill', function(d, i){ return color(d[2])})
+                .style('opacity', 1)
+                .style('stroke', "black")
+                .style('stroke-opacity', .3)
+                .style('stroke-width', 1)
+                .attr("transform", 'translate(' + origin + ',' + origin + ')')
 
-              .attr('d', arc)
-              .style('fill', function(d, i){ return color[d[2]]})
-              .style('opacity', .7)
-              .style('stroke', "black")
-              .style('stroke-opacity', .3)
-              .attr("transform", 'translate(' + origin + ',' + origin + ')')
-
-svg.on('click', enlargeNode)
-
-
-
-svg.on('mouseover', showName)
-  .on('mouseout', hideName)
+  svg.on('click', enlargeNode)
 
 
-var tweetbox = svg.append('rect')
-            .attr('class', 'tweetbox')
-            .attr('x', 15)
+
+  svg.on('mouseover', showName)
+    .on('mouseout', hideName)
+
+
+  var tweetbox = svg.append('rect')
+              .attr('class', 'tweetbox')
+              .attr('x', 15)
+              .attr('y', 0)
+              .attr('width', textboxwidth)
+              .attr('height', function(d){
+                return d.text.length * 100
+              })
+              .style('stroke', 'black')
+              .style('stroke-opacity', .3 )
+              .style('fill', function(d){return color(d.group[0])})
+              //.style('fill', 'white')
+              .style('fill-opacity', 1)
+              .attr('display', 'none')
+               .attr('transform', 'translate(' + origin +','+ origin + ')')
+
+  var tweettext = svg.append("foreignObject")
+    //.attr({width: textboxwidth, height: 50})
+    .attr('width', textboxwidth)
+    .attr('height', function(d){
+                return d.text.length *70
+              })
+    .style('color', "white")//function(d){return color[d.group[0]]})
+    .style('fill-opacity', 1)
+    .style('display', 'none')
+    .attr('class', 'tweettext')
+    .attr('x', 0 + 'px')
+    .attr('y', '0px')
+    .attr('transform', 'translate(' + origin +','+ origin + ')')
+    .style({width: textboxwidth + 'px', 
+          height: 70 + 'px', 
+          "font-size": "11px",
+          "font-family": "Helvetica",
+          "fill": 'red'
+      })
+      .html(function(d){
+        text = d.name + ':'
+        d.text.forEach(function(entry){
+          text = text + '\n' + entry
+        })
+
+        return text
+      });
+
+
+      
+  var text3 = svg.append('text')
+            .attr('x', 0)
             .attr('y', 0)
-            .attr('width', textboxwidth)
-            .attr('height', function(d){
-              return d.text.length * 80
-            })
-            .style('stroke', 'grey')
-            .style('fill', function(d){return color[d.group[0]]})
-            //.style('fill', 'white')
-            .style('fill-opacity', 1)
+            .attr('class', 'nametext')
+             .style('font-family', 'Helvetica')
+            .style('font-size', '14px')
+            .text(function(d){return d.name;})
             .attr('display', 'none')
              .attr('transform', 'translate(' + origin +','+ origin + ')')
 
-var tweettext = svg.append("foreignObject")
-  //.attr({width: textboxwidth, height: 50})
-  .attr('width', textboxwidth)
-  .attr('height', function(d){
-              return d.text.length *70
-            })
-  .style('color', "white")//function(d){return color[d.group[0]]})
-  .style('fill-opacity', 1)
-  .style('display', 'none')
-  .attr('class', 'tweettext')
-  .attr('x', 0 + 'px')
-  .attr('y', '0px')
-  .attr('transform', 'translate(' + origin +','+ origin + ')')
-  .style({width: textboxwidth + 'px', 
-        height: 70 + 'px', 
-        "font-size": "11px",
-        "font-family": "Helvetica",
-        "fill": 'red'
-    })
-    .html(function(d){
-      text = d.name + ':'
-      d.text.forEach(function(entry){
-        text = text + '\n' + entry
-      })
+  //moot by tweettext box
+  /*svg.append("title")
+        .text(function(d) { return 'username:' + d.name + '\ntext:' + d.text; });*/
 
-      return text
+
+    force.on("tick", function() {
+      link2.attr("x1", function(d) { return d.source.x + origin; })
+          .attr("y1", function(d) { return d.source.y + origin; })
+          .attr("x2", function(d) { return d.target.x + origin; })
+          .attr("y2", function(d) { return d.target.y + origin; });
+
+    svg.attr("x", function(d) { return d.x = Math.max(radius, Math.min(width - (origin + 5) - d.score, d.x)); })
+          .attr("y", function(d) { return d.y = Math.max(radius, Math.min(height-(origin + 5)  -d.score, d.y)); });
+
     });
+  });}
 
 
-    
-var text3 = svg.append('text')
-          .attr('x', 0)
-          .attr('y', 0)
-          .attr('class', 'nametext')
-           .style('font-family', 'Helvetica')
-          .style('font-size', '14px')
-          .text(function(d){return d.name;})
-          .attr('display', 'none')
-           .attr('transform', 'translate(' + origin +','+ origin + ')')
-
-
-/*svg.append("title")
-      .text(function(d) { return 'username:' + d.name + '\ntext:' + d.text; });*/
-
-
-  force.on("tick", function() {
-    link2.attr("x1", function(d) { return d.source.x + origin; })
-        .attr("y1", function(d) { return d.source.y + origin; })
-        .attr("x2", function(d) { return d.target.x + origin; })
-        .attr("y2", function(d) { return d.target.y + origin; });
-
-  svg.attr("x", function(d) { return d.x = Math.max(radius, Math.min(width - (origin + 5) - d.score, d.x)); })
-        .attr("y", function(d) { return d.y = Math.max(radius, Math.min(height-(origin + 5)  -d.score, d.y)); });
-
-  });
-});}
-
-
-$scope.viz();
-}]);
-</script>
+  $scope.viz();
+  }]);
+  </script>
 
 
 

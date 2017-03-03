@@ -49,6 +49,8 @@ def additional_group(value, additional_terms,term_type):
 
 def create_circle_lists(groups, list_of_terms, index):
 	print groups
+	if len(groups) == 0:
+		return []
 	ratio = (float(1)/float(len(groups))) * len(list_of_terms)
 	angles = []
 	#print ratio
@@ -77,6 +79,8 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 				searchval=search(day_user_data, d['user']['screen_name'])
 				sub_searched = additional_group(d, additional_terms, search_type)
 				groups_in_tweet = sub_searched[0]
+				if len(groups_in_tweet) == 0:
+					continue
 				terms_in_tweet = sub_searched[1]
 				angles =  create_circle_lists(groups_in_tweet, search_terms, index)
 				if 'created_at' in d:
@@ -152,11 +156,15 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 
 #firstformat(9, 17, ['BlackLivesMatter', 'MichaelBrown', 'HandsUpDontShoot', ], 'BlackLivesMatterAllLivesMatterMichaelBrownFergusonPolice', 'hashtag')
 
-#start = 17
-#end = 18
-#name = 'allBlackLivesMatterMichaelBrownHandsUpDontShootEricGarnerICantBreatheFergusonPoliceAllLivesMatterMikeBrownJusticeForMichaelBrownIfTheyGunnedMeDownFergusonIfIWasGunnedDownDONTSHOOTMyaWhiteJusticeForMikeBrown'
+start = 17
+end = 18
+#name = 'allBlackLivesMatterMichaelBrownHandsUpDontShootEricGarnerICantBreatheFergusonPoliceAllLivesMatterMikeBrownJusticeForMichaelBrownIfTheyGunnedMeDownIfIWasGunnedDownDONTSHOOTMyaWhiteJusticeForMikeBrown'
+name = 'allBlackLivesMatterMichaelBrownHandsUpDontShootEricGarnerICantBreatheFergusonPoliceAllLivesMatterMikeBrownJusticeForMichaelBrownIfTheyGunnedMeDownFergusonIfIWasGunnedDownDONTSHOOTMyaWhiteJusticeForMikeBrown'
 #terms = ['BlackLivesMatter','MichaelBrown','HandsUpDontShoot','EricGarner','ICantBreathe','FergusonPolice','AllLivesMatter','MikeBrown','JusticeForMichaelBrown','IfTheyGunnedMeDown','Ferguson','IfIWasGunnedDown','DONTSHOOT','MyaWhite','JusticeForMikeBrown']
-#firstformat(start, end, terms, name, 'hashtag')
+#terms = ['BlackLivesMatter','MichaelBrown','HandsUpDontShoot','EricGarner','ICantBreathe','FergusonPolice','AllLivesMatter','MikeBrown','JusticeForMichaelBrown','IfTheyGunnedMeDown','IfIWasGunnedDown','DONTSHOOT','MyaWhite','JusticeForMikeBrown']
+terms = ['BlackLivesMatter','MichaelBrown','HandsUpDontShoot','EricGarner','ICantBreathe','FergusonPolice','AllLivesMatter','JusticeForMichaelBrown','IfTheyGunnedMeDown','IfIWasGunnedDown','DONTSHOOT','MyaWhite','JusticeForMikeBrown']
+
+firstformat(start, end, terms, name, 'hashtag')
 	   # for x in day_user_data:
 		#	if len(x['links']) > 1:
 		#		print x['links']
