@@ -120,6 +120,13 @@
        // d3.select('#slider3textmax').text(value[ 1 ]);
       }));*/
 
+  //move to front
+  d3.selection.prototype.moveToFront = function() {
+  return this.each(function(){
+    this.parentNode.appendChild(this);
+  });
+  };
+
   $scope.viz = function(){
    // d3.select('#network').remove()
 
@@ -258,7 +265,8 @@
 
   function enlargeNode(){
 
-    node = d3.select(this)
+    var node = d3.select(this)
+    node.moveToFront();
     tweetbox = node.select('.tweetbox')
     tweettext = node.select('.tweettext')
 
@@ -311,6 +319,7 @@
   function showName(){
    
     node = d3.select(this)
+    node.moveToFront();
     node.style('stroke-opacity', 1)
     node.select('.nametext').attr('display', '')
   }
@@ -370,7 +379,7 @@
     .on('mouseout', hideName)
 
 
-  var tweetbox = svg.append('rect')
+ /* var tweetbox = svg.append('rect')
               .attr('class', 'tweetbox')
               .attr('x', 15)
               .attr('y', 0)
@@ -384,13 +393,18 @@
               //.style('fill', 'white')
               .style('fill-opacity', 1)
               .attr('display', 'none')
-               .attr('transform', 'translate(' + origin +','+ origin + ')')
+               .attr('transform', 'translate(' + origin +','+ origin + ')')*/
 
   var tweettext = svg.append("foreignObject")
     //.attr({width: textboxwidth, height: 50})
     .attr('width', textboxwidth)
     .attr('height', function(d){
-                return d.text.length *70
+              len = 0
+              d.text.forEach(function(tweet){
+                len = len + tweet.length
+              })
+            return   (len/20 + 2) * 13
+              //  return d.text.length *70
               })
     .style('color', "white")//function(d){return color[d.group[0]]})
     .style('fill-opacity', 1)
@@ -400,11 +414,14 @@
     .attr('y', '0px')
     .attr('transform', 'translate(' + origin +','+ origin + ')')
     .style({width: textboxwidth + 'px', 
-          height: 70 + 'px', 
+          //height: 70 + 'px', 
           "font-size": "11px",
           "font-family": "Helvetica",
           "fill": 'red'
       })
+    .style('background-color', function(d){
+      return color(d.group[0]);
+    })
       .html(function(d){
         text = d.name + ':'
         d.text.forEach(function(entry){
