@@ -127,9 +127,11 @@
 
 
 
-d3.json("/formatted_data/"+ $scope.day +".json", function(error, graph) {
+d3.json("/formatted_data/small"+ $scope.day +".json", function(error, graph) {
 
 var  numnodes = graph.nodes.length
+
+
 var chargeCalc = function(num){
   console.log(num);
 
