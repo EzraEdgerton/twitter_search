@@ -16,7 +16,7 @@ Part 2 - Filter the right range and format the json files.
 1. Now that everything is set up and unzipped, choose your range of days and choose your search term.
 
 
-2. To get the filtered and formatted data, run allsearch.py:
+2. To get the filtered data, run allsearch.py:
 
  	the first argument as the start day in the range you wish to search
 
@@ -67,9 +67,52 @@ And if I wanted to look at tweets for the first eight days of the month while ch
 !!!!If you want to use the older version, you still can use search.py unaltered, that readme is at searchREADME.txt
 
 
-After this, your data will be filtered, formatted and stored in the 'formatted_data' folder with a name beginning with 'formatted' and followed by the date range and each by each of the search terms and the type.
+After this, your data will be filtered and stored in the filtered_data folder.
 
-Part 3 – Create Visualization
+PART 3 – Format Data (NEW STEP):
+Now it is time to format the data. Run allinitialformat.py whose usage is as follows:
+
+first argument: 
+		the filename(excluding the day at the beginning and the .json at the end)
+		of the filtered data you wish to format
+
+second through fourth (or fifth) from last argument:
+		all of the terms you wish to create the formatted data for
+
+fourth from last argument is an optional:
+		if it is '-range' then allinitialformat will format the data in the day range as 
+		one file.
+
+		if not included then allinitialformat will create one formatted file for each 
+		day in the range provided
+
+third from last argument:
+		search type, either 'hashtag', 'text' or 'username'
+
+second from last argument:
+		first day in range
+
+last argument: 
+		last day in range (inclusive)
+
+e.g.
+
+if the data is stored in  files like 
+	9allMondaysMondaysAreTheWorstBeginningOfTheWeekTwitterDays.json
+
+and I want to format data for MondaysAreTheWorst and TwitterDays hashtags
+from the 3rd to the 13th with each day stored in its own file I would run:
+
+	python allinitialformat.py allMondaysMondaysAreTheWorstBeginningOfTheWeekTwitterDays MondaysAreTheWorst TwitterDays hashtag 3 14
+
+If I wanted to do that same thing but store the entire range in one formatted file I would run:
+
+	python allinitialformat.py allMondaysMondaysAreTheWorstBeginningOfTheWeekTwitterDays MondaysAreTheWorst TwitterDays -range hashtag 3 14
+
+Your data will be stored data in the formatted_data folder
+
+
+Part 4 – Create Visualization
 
 	1. Now that you've got the data file(s) formatted properly, you will need to copy 'twitter.html' which is in the 'twitter-network-creator' folder, rename it(without spaces in the name), and open it with a text editor. Keep this new file in the 'twitter-network-creator' folder.
 

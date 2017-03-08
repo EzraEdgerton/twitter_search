@@ -111,6 +111,6 @@ for day in range(start_day, end_day):
 	with open('twitter-network-creator/filtered_data/'+str(day)+filename + '.json', 'w') as outfile:
 		json.dump(tweets, outfile, indent=4)
 
-allinitialformat.firstformat(start_day, end_day, search_terms, filename, search_type)
+#allinitialformat.firstformat(start_day, end_day, search_terms, filename, search_type)
 
 

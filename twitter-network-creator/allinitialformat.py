@@ -1,8 +1,76 @@
+"""
+allininitialformat.py 
+
+for formatting the appropriate filtered data generated from allsearch.py
+
+USAGE:
+first argument: 
+		the filename(excluding the day at the beginning and the .json at the end)
+		of the filtered data you wish to format
+
+second through fourth (or fifth) from last argument:
+		all of the terms you wish to create the formatted data for
+
+fourth from last argument is an optional:
+		if it is '-range' then allinitialformat will format the data in the day range as 
+		one file.
+
+		if not included then allinitialformat will create one formatted file for each 
+		day in the range provided
+
+third from last argument:
+		search type, either 'hashtag', 'text' or 'username'
+
+second from last argument:
+		first day in range
+
+last argument: 
+		last day in range (inclusive)
+
+e.g.
+
+if the data is stored in  files like 
+	9allMondaysMondaysAreTheWorstBeginningOfTheWeekTwitterDays.json
+
+and I want to format data for MondaysAreTheWorst and TwitterDays hashtags
+from the 3rd to the 13th with each day stored in its own file I would run:
+
+	python allinitialformat.py allMondaysMondaysAreTheWorstBeginningOfTheWeekTwitterDays MondaysAreTheWorst TwitterDays hashtag 3 14
+
+If I wanted to do that same thing but store the entire range in one formatted file I would run:
+
+	python allinitialformat.py allMondaysMondaysAreTheWorstBeginningOfTheWeekTwitterDays MondaysAreTheWorst TwitterDays -range hashtag 3 14
+
+Stores data in the formatted_data folder
+
+"""
 import sys
 import json
 import os
 import secondaryformat
 import twitter_folder_change
+
+
+arg_len = len(sys.argv)
+
+day_range = False
+subtractor = 3
+if sys.argv[arg_len - 4] == '-range':
+	day_range = True
+	subtractor = 4
+
+start_day =  int(sys.argv[arg_len - 2])
+end_day = int(sys.argv[arg_len - 1])
+searchtype = sys.argv[arg_len - 3]
+
+filename = sys.argv[1]
+terms = []
+
+
+for t in range(1, arg_len - subtractor):
+	terms.append(sys.argv[t])
+
+print terms
 
 def typecheck(term_type, term):
 	if term_type == 'hashtag':
@@ -154,19 +222,9 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 	secondaryformat.secondformat(start_day, end_day, search_terms, filename)
 
 
-#firstformat(9, 17, ['BlackLivesMatter', 'MichaelBrown', 'HandsUpDontShoot', ], 'BlackLivesMatterAllLivesMatterMichaelBrownFergusonPolice', 'hashtag')
-
-start = 9
-end = 24
-#name = 'allBlackLivesMatterMichaelBrownHandsUpDontShootEricGarnerICantBreatheFergusonPoliceAllLivesMatterMikeBrownJusticeForMichaelBrownIfTheyGunnedMeDownIfIWasGunnedDownDONTSHOOTMyaWhiteJusticeForMikeBrown'
-name = 'allBlackLivesMatterMichaelBrownHandsUpDontShootEricGarnerICantBreatheFergusonPoliceAllLivesMatterMikeBrownJusticeForMichaelBrownIfTheyGunnedMeDownFergusonIfIWasGunnedDownDONTSHOOTMyaWhiteJusticeForMikeBrown'
-#terms = ['BlackLivesMatter','MichaelBrown','HandsUpDontShoot','EricGarner','ICantBreathe','FergusonPolice','AllLivesMatter','MikeBrown','JusticeForMichaelBrown','IfTheyGunnedMeDown','Ferguson','IfIWasGunnedDown','DONTSHOOT','MyaWhite','JusticeForMikeBrown']
-terms = ['BlackLivesMatter','MichaelBrown','HandsUpDontShoot','EricGarner','ICantBreathe','FergusonPolice','AllLivesMatter','MikeBrown','JusticeForMichaelBrown','IfTheyGunnedMeDown','IfIWasGunnedDown','DONTSHOOT','MyaWhite','JusticeForMikeBrown', 'DarrenWilson']
-#terms = ['BlackLivesMatter','MichaelBrown','HandsUpDontShoot','EricGarner','ICantBreathe','FergusonPolice','AllLivesMatter','JusticeForMichaelBrown','IfTheyGunnedMeDown','IfIWasGunnedDown','DONTSHOOT','MyaWhite','JusticeForMikeBrown']
-for day in range(start, end):
-	firstformat(day, day + 1, terms, name, 'hashtag')
-	   # for x in day_user_data:
-		#	if len(x['links']) > 1:
-		#		print x['links']
-
+if day_range:
+	firstformat(start_day, end_day, terms, filename, searchtype)
+else:
+	for day in range(start_day, end_day):
+		firstformat(day, day + 1, terms, filename, searchtype)
 
