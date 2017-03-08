@@ -156,15 +156,15 @@ def firstformat(start_day, end_day, search_terms, filename, search_type):
 
 #firstformat(9, 17, ['BlackLivesMatter', 'MichaelBrown', 'HandsUpDontShoot', ], 'BlackLivesMatterAllLivesMatterMichaelBrownFergusonPolice', 'hashtag')
 
-start = 17
-end = 18
+start = 9
+end = 24
 #name = 'allBlackLivesMatterMichaelBrownHandsUpDontShootEricGarnerICantBreatheFergusonPoliceAllLivesMatterMikeBrownJusticeForMichaelBrownIfTheyGunnedMeDownIfIWasGunnedDownDONTSHOOTMyaWhiteJusticeForMikeBrown'
 name = 'allBlackLivesMatterMichaelBrownHandsUpDontShootEricGarnerICantBreatheFergusonPoliceAllLivesMatterMikeBrownJusticeForMichaelBrownIfTheyGunnedMeDownFergusonIfIWasGunnedDownDONTSHOOTMyaWhiteJusticeForMikeBrown'
 #terms = ['BlackLivesMatter','MichaelBrown','HandsUpDontShoot','EricGarner','ICantBreathe','FergusonPolice','AllLivesMatter','MikeBrown','JusticeForMichaelBrown','IfTheyGunnedMeDown','Ferguson','IfIWasGunnedDown','DONTSHOOT','MyaWhite','JusticeForMikeBrown']
-#terms = ['BlackLivesMatter','MichaelBrown','HandsUpDontShoot','EricGarner','ICantBreathe','FergusonPolice','AllLivesMatter','MikeBrown','JusticeForMichaelBrown','IfTheyGunnedMeDown','IfIWasGunnedDown','DONTSHOOT','MyaWhite','JusticeForMikeBrown']
-terms = ['BlackLivesMatter','MichaelBrown','HandsUpDontShoot','EricGarner','ICantBreathe','FergusonPolice','AllLivesMatter','JusticeForMichaelBrown','IfTheyGunnedMeDown','IfIWasGunnedDown','DONTSHOOT','MyaWhite','JusticeForMikeBrown']
-
-firstformat(start, end, terms, name, 'hashtag')
+terms = ['BlackLivesMatter','MichaelBrown','HandsUpDontShoot','EricGarner','ICantBreathe','FergusonPolice','AllLivesMatter','MikeBrown','JusticeForMichaelBrown','IfTheyGunnedMeDown','IfIWasGunnedDown','DONTSHOOT','MyaWhite','JusticeForMikeBrown', 'DarrenWilson']
+#terms = ['BlackLivesMatter','MichaelBrown','HandsUpDontShoot','EricGarner','ICantBreathe','FergusonPolice','AllLivesMatter','JusticeForMichaelBrown','IfTheyGunnedMeDown','IfIWasGunnedDown','DONTSHOOT','MyaWhite','JusticeForMikeBrown']
+for day in range(start, end):
+	firstformat(day, day + 1, terms, name, 'hashtag')
 	   # for x in day_user_data:
 		#	if len(x['links']) > 1:
 		#		print x['links']

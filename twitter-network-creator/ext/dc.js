@@ -11,6 +11,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+ //console.log(durr)
 dc = {
     version: "1.5.0",
     constants : {
@@ -984,6 +985,7 @@ dc.marginable = function (_chart) {
     var _yElasticity = false;
 
     var _brush = d3.svg.brush();
+
     var _brushOn = true;
     var _round;
 
@@ -1405,8 +1407,9 @@ dc.marginable = function (_chart) {
             extent[1] = extent.map(_chart.round())[1];
 
             _g.select(".brush")
-                .call(_brush.extent(extent));
+                .call(_brush.extent(extent))
         }
+
         return extent;
     };
 
@@ -1438,6 +1441,7 @@ dc.marginable = function (_chart) {
 
     _chart.redrawBrush = function (g) {
         if (_brushOn) {
+           
             if (_chart.filter() && _chart.brush().empty())
                 _chart.brush().extent(_chart.filter());
 
@@ -1445,7 +1449,6 @@ dc.marginable = function (_chart) {
             gBrush.call(_chart.brush().x(_chart.x()));
             gBrush.selectAll("rect").attr("height", brushHeight());
         }
-
         _chart.fadeDeselectedArea();
     };
 
@@ -1460,11 +1463,7 @@ dc.marginable = function (_chart) {
             + "A6,6 0 0 " + e + " " + (6.5 * x) + "," + (y + 6)
             + "V" + (2 * y - 6)
             + "A6,6 0 0 " + e + " " + (.5 * x) + "," + (2 * y)
-            + "Z"
-            + "M" + (2.5 * x) + "," + (y + 8)
-            + "V" + (2 * y - 8)
-            + "M" + (4.5 * x) + "," + (y + 8)
-            + "V" + (2 * y - 8);
+            + "Z";
     };
 
     function getClipPathId() {
@@ -2429,6 +2428,7 @@ dc.barChart = function (parent, chartGroup) {
     var _gap = DEFAULT_GAP_BETWEEN_BARS;
     var _centerBar = false;
 
+
     var _numberOfBars;
     var _barWidth;
 
@@ -2523,6 +2523,13 @@ dc.barChart = function (parent, chartGroup) {
         return _numberOfBars;
     }
 
+    _chart.getExtent = function(){
+        var extent = _chart.brush().extent();
+        
+        return extent
+    }
+
+
     _chart.fadeDeselectedArea = function () {
         var bars = _chart.chartBodyG().selectAll("rect.bar");
         var extent = _chart.brush().extent();
@@ -2543,7 +2550,9 @@ dc.barChart = function (parent, chartGroup) {
             if (!_chart.brushIsEmpty(extent)) {
                 var start = extent[0];
                 var end = extent[1];
-
+               // bars.call('change')
+               // _chart.getExtent(start, end)
+               // bars.each.change()
                 bars.classed(dc.constants.DESELECTED_CLASS, function (d) {
                     var xValue = _chart.keyAccessor()(d.data);
                     return xValue < start || xValue >= end;
@@ -2568,9 +2577,11 @@ dc.barChart = function (parent, chartGroup) {
 
     _chart.extendBrush = function () {
         var extent = _chart.brush().extent();
+        
         if (_chart.round() && !_centerBar) {
             extent[0] = extent.map(_chart.round())[0];
             extent[1] = extent.map(_chart.round())[1];
+       
 
             _chart.chartBodyG().select(".brush")
                 .call(_chart.brush().extent(extent));
