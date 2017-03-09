@@ -7,7 +7,12 @@
  <link rel="stylesheet" href="/ext/css/bootstrap.min.css"/>  
   <link rel="stylesheet" href="/ext/css/dc.css"/> 
  <style>
-
+ .hide {
+  display:none;
+ }
+ .show{
+  display:inline ;
+ }
  </style>
  
 </head>
@@ -92,7 +97,7 @@
 
   termiteTopics.controller('twitterselect',['$scope', function($scope){
   var width = 1200,
-      height = 1000,
+      height = 1200,
       radius = 4,
       charge = -20,
       linkDistance = 20;
@@ -160,7 +165,6 @@ var chargeCalc = function(num){
 }
 
 charge = chargeCalc(numnodes)
-console.log(charge)
 
 var force = d3.layout.force()
     .charge(charge)
@@ -172,6 +176,10 @@ force
         .links(graph.links)
         .start();
   var labelcols = 4
+
+  labelenclosewidth = width-origin
+
+  var labelwidth = (width-origin)/4 - 10
   var square = 15
 
   var textboxwidth = 170;
@@ -253,28 +261,47 @@ depthChart.on('postRedraw', function(chart){
     }
   }
 
-  var labeltext = svg_labels.selectAll('text')
-            .data(graph.terms)
-            .enter()
+  var labelgroups = svg_labels.selectAll('svg')
+                .data(graph.terms)
+                .enter()
+                .append('svg')
+                .attr('class', 'unselected')
+                .attr('x', function(d, i) { return labelenclosewidth/labelcols *  (i % labelcols)})
+                .attr('y', function(d, i) { return labely(i, false)})
+                .attr('height', 35)
+                .attr('width', labelwidth)
+                .on('click', selectHashtag)
+                .on('mouseover', function(d){
+                  d3.select(this).style('cursor', 'pointer')
+                })
+
+
+  var labelsquares = labelgroups.append('rect')
+                      .style('fill', function(d, i){return color(i)})
+                      .style('stroke', 'black')
+                      .style('stroke-opacity', .2)
+                      .attr('height', square)
+                      .attr('width', square)
+                      .attr('y', 3)
+                      .attr('x', 5)
+
+  var labeltext = labelgroups
             .append('text')
             .style('font-family', 'Helvetica')
-            .attr('x', function(d, i) { return 25 + (width/4) *  (i % labelcols)})
-            .attr('y', function(d, i) { return labely(i, true)})
+            .attr('x', 25)
+            .attr('y', 16)
             .text(function(d){return d})
-
-  var labelsquares = svg_labels.selectAll('rect')
-            .data(graph.terms)
-            .enter()
-            .append('rect')
-            .style('fill', function(d, i){return color(i)})
-            .style('stroke', 'black')
-            .style('stroke-opacity', .3)
-            .attr('x', function(d, i) { return (width/4) *  (i % labelcols)})
-            .attr('y', function(d, i) { return labely(i, false)})
-            .attr('height', square)
-            .attr('width', square)
-            .attr('fill-opacity', 1)
-
+var selectionrects = labelgroups.append('rect')
+                        .attr('x', 0)
+                        .attr('y', 0)
+                        .attr('id', function(d){
+                          return 'select' + d
+                        })
+                        .style('rx', 4)
+                        .style('ry', 4)
+                        .attr('height', 22)
+                        .attr('width', labelwidth)
+                        .style('opacity', .1)
 
   var visouter = d3.select("#network").append("svg")
       .attr('width', width)
@@ -315,20 +342,60 @@ depthChart.on('postRedraw', function(chart){
   var svg =  vis.selectAll(".node").data(graph.nodes)
     .enter()
     .append('svg')
-    .attr('class', function(d){return 'node ' + d.index})
-    //.style('color', function(d){return d.group[0]})
+    .attr('hashtags', function(d){
+      return d.tweets_in_text
+    })
+    .classed('small', function(d, i){
+      var thing = setClass(d3.select(this), d, i)
+      return thing
+    })
     .call(force.drag)
 
-
+function setClass(node, d, i){
+  d.tweets_in_text.forEach(function(tag){
+    node.classed(tag, true)
+  })
+  return true
+}
 
   var circle = svg.selectAll('.circle')
 
-  function enlargeNode(){
+  function selectHashtag(d,i){
+    console.log(d)
 
+    console.log(d3.selectAll('.' + d))
+
+    box = d3.select(this)
+    console.log(box.attr('class'))
+    if (box.attr('class') == 'unselected'){
+      box.attr('class', 'selected')
+      box.select('#select' + d).transition()
+          .duration(250)
+          .style('opacity', .5)
+          
+       d3.selectAll('.' + d)
+      .classed('hide', true)
+    }
+    else{
+      box.attr('class', 'unselected')
+      box.select('#select' + d).transition()
+          .duration(250)
+          .style('opacity', .1)
+         d3.selectAll('.' + d)
+      .classed('hide', false)
+    }
+
+
+    return 1
+  }
+
+  function enlargeNode(){
     var node = d3.select(this)
+    console.log(node.attr('class'))
     node.moveToFront();
     tweetbox = node.select('.tweetbox')
     tweettext = node.select('.tweettext')
+    //show box so it appears within bounding area
     if (node.attr('x') < width/2 - origin){
       tweetbox.attr('x', 15)
       tweettext.attr('x', 15)
@@ -345,13 +412,15 @@ depthChart.on('postRedraw', function(chart){
       tweetbox.attr('y', -50)
       tweettext.attr('y', -50)
     }
-    var selnode = d3.select(this).selectAll('path').transition()
-    if (node.attr('class') == 'big'){
+    console.log()
+    var selnode = node.selectAll('path').transition()
+    if (node.classed('big')){
        selnode
       .duration(250)
       .attr('d', arc)
       .style('opacity', 1);
-    node.attr('class', 'small')
+    node.classed('small', true)
+    node.classed('big', false)
      node.select('.tweetbox').transition()
       .duration(250).attr('display', 'none')
       tweettext.style('display', 'none')
@@ -361,7 +430,8 @@ depthChart.on('postRedraw', function(chart){
       .duration(250)
       .attr('d', arc2)
       .style('opacity', 1);
-    node.attr('class', 'big')
+    node.classed('big', true)
+    node.classed('small', false)
      node.select('.tweetbox').transition()
       .duration(250).attr('display', '')
 
@@ -372,17 +442,16 @@ depthChart.on('postRedraw', function(chart){
   }
 
   function showName(){
-   
     node = d3.select(this)
     node.moveToFront();
     node.style('stroke-opacity', 1)
-    node.select('.nametext').attr('display', '')
+    node.select('.nametext').classed('hide', false)//.attr('display', '')
   }
 
   function hideName(){
     node = d3.select(this)
         node.style('stroke-opacity', .3)
-    node.select('.nametext').attr('display', 'none')
+    node.select('.nametext').classed('hide', true)
   }
    
 $scope.resetNodeMap = function(){
@@ -399,6 +468,7 @@ $scope.resetNodeMap = function(){
       return ''
     }
     })
+
   }
     
   circle.data(function(d, i ){ return d.angles })
@@ -486,7 +556,7 @@ $scope.resetNodeMap = function(){
              .style('background-color', 'black')
             .style('font-size', '14px')
             .text(function(d){return d.name;})
-            .attr('display', 'none')
+            .classed('hide', true)
              .attr('transform', 'translate(' + origin +','+ origin + ')')
 
     force.on("tick", function() {
