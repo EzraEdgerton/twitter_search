@@ -67,7 +67,7 @@ filename = sys.argv[1]
 terms = []
 
 
-for t in range(1, arg_len - subtractor):
+for t in range(2, arg_len - subtractor):
 	terms.append(sys.argv[t])
 
 print terms
@@ -88,7 +88,7 @@ def search(values, searchFor):
 
 
 def additional_group(value, additional_terms,term_type):
-	print value['text']
+	#print value['text']
 	terms_number = len(additional_terms)
 	group = 0
 	finder = ''
