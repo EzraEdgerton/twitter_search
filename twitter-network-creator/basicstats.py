@@ -53,9 +53,9 @@ Stores data in the basic_stats folder
 import sys
 import json
 import os
-import secondaryformat
+#import secondaryformat
 import twitter_folder_change
-import allinitialformat
+#import allinitialformat
 
 
 arg_len = len(sys.argv)
@@ -63,6 +63,7 @@ arg_len = len(sys.argv)
 day_range = False
 subtractor = 3
 if sys.argv[arg_len - 4] == '-range':
+	print 'one FILE'
 	day_range = True
 	subtractor = 4
 
@@ -74,10 +75,46 @@ filename = sys.argv[1]
 terms = []
 
 
-for t in range(1, arg_len - subtractor):
+for t in range(2, arg_len - subtractor):
 	terms.append(sys.argv[t])
 
-print terms
+print start_day
+print end_day
+print searchtype
+print day_range
+
+print terms 
+
+
+def additional_group(value, additional_terms,term_type):
+	#print value['text']
+	terms_number = len(additional_terms)
+	group = 0
+	finder = ''
+	group_list = []
+	terms_list = []
+	for i in range(0, terms_number):
+		if term_type == 'text':
+			val = value['text'].find(additional_terms[i])
+			if val!= -1:
+				#group = group + i
+				#finder = value['text'][val: val + 2]
+				group_list.append(i)
+				terms_list.append(additional_terms[i])
+				#print finder
+		if term_type == 'hashtag':
+			for tag in value['entities']['hashtags']:
+				if tag['text'] == additional_terms[i]:
+					group_list.append(i)
+					terms_list.append(additional_terms[i])
+		if term_type == 'username':
+			if value['user']['screen_name'].find(additional_terms[i]) != -1:
+				group_list.append(i)
+				terms_list.append(additional_terms[i])
+	#print terms_list
+	return [group_list, terms_list]
+
+
 
 
 def basicstats(start, end, terms, name, search_type):
@@ -85,11 +122,16 @@ def basicstats(start, end, terms, name, search_type):
 	index = 0
 	for day in range(start, end):
 		with open('filtered_data/'+str(day)+filename+'.json') as data_file:
+			print day
 			data = json.load(data_file)
 			for d in data:
-				tags = allinitialformat.additional_group(d, terms, search_type)
+				tags = additional_group(d, terms, search_type)
+
 				tag_groups = tags[0]
+				tag_groups = list(set(tag_groups))
 				tag_names = tags[1]
+				tag_names = list(set(tag_names))
+				print tag_names
 				retweeted = False
 				if 'retweeted_status' in d:
 					retweeted = True
@@ -97,17 +139,18 @@ def basicstats(start, end, terms, name, search_type):
 					time_created = d['created_at']
 				else:
 					time_created = ''
-
-				basic_data.append({
-					'index': index,
-					'name': d['user']['screen_name'],
-					'time': time_created,
-					'groups': tag_groups,
-					'tags': tag_names,
-					#'text': d['text'],
-					'retweeted': retweeted
-					})
-				index = index + 1
+				if len(tag_names) != 0:
+					for t in tag_names:
+						basic_data.append({
+							'index': index,
+							'name': d['user']['screen_name'],
+							'time': time_created,
+							'groups': tag_groups,
+							'tags': [t],
+							#'text': d['text'],
+							'retweeted': retweeted
+							})
+						index = index + 1
 	with open('basic_stats/'+ str(start_day) + '-' + str(end_day) + '-' + filename +'.json', 'w') as outfile:
 		basic_stats_data = {
 			'terms' : terms,
@@ -119,6 +162,7 @@ def basicstats(start, end, terms, name, search_type):
 
 
 if day_range:
+	print 'WHAT IS GOING ON!'
 	basicstats(start_day, end_day, terms, filename, searchtype)
 else:
 	for day in range(start_day, end_day):

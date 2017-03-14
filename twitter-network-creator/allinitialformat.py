@@ -70,7 +70,7 @@ terms = []
 for t in range(2, arg_len - subtractor):
 	terms.append(sys.argv[t])
 
-print terms
+#print terms
 
 def typecheck(term_type, term):
 	if term_type == 'hashtag':
@@ -112,11 +112,11 @@ def additional_group(value, additional_terms,term_type):
 			if value['user']['screen_name'].find(additional_terms[i]) != -1:
 				group_list.append(i)
 				terms_list.append(additional_terms[i])
-	print terms_list
+	#print terms_list
 	return [group_list, terms_list]
 
 def create_circle_lists(groups, list_of_terms, index):
-	print groups
+	#print groups
 	if len(groups) == 0:
 		return []
 	ratio = (float(1)/float(len(groups))) * len(list_of_terms)

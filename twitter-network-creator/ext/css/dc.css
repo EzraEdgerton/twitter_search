@@ -207,10 +207,12 @@
 }
 
 .dc-chart g.row text {
-    fill: white;
+    fill: #333;
     font-size: 12px;
     cursor: pointer;
 }
+
+
 
 .dc-chart g text {
     /* Makes it so the user can't accidentally click and select text that is meant as a label only */
