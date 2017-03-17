@@ -1,10 +1,10 @@
-# All this created by Ezra Edgerton June 2016 - February 2017 for the University of Cincinnati. Copyright Free Software Copyright etc. to me.
+# All this created by Ezra Edgerton June 2016 - March 2017 for the University of Cincinnati. Copyright Free Software Copyright etc. to me.
 #
 #
 import sys
 import os
 import json
-import allinitialformat
+#import allinitialformat
 import secondaryformat
 import twitter_folder_change
 
@@ -36,8 +36,8 @@ if sys.argv[3] == '-a' or sys.argv[3] == '-all':
 for i in range(start_args, argument_len - 1):
 	filename = filename + sys.argv[i]
 	
-for i in range(start_args, argument_len - 1):
-	search_terms.append(allinitialformat.typecheck(search_type, sys.argv[i]))
+#for i in range(start_args, argument_len - 1):
+#	search_terms.append(allinitialformat.typecheck(search_type, sys.argv[i]))
 
 if all_search:
 	search_terms_two = search_terms
