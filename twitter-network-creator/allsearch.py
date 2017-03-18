@@ -36,8 +36,8 @@ if sys.argv[3] == '-a' or sys.argv[3] == '-all':
 for i in range(start_args, argument_len - 1):
 	filename = filename + sys.argv[i]
 	
-#for i in range(start_args, argument_len - 1):
-#	search_terms.append(allinitialformat.typecheck(search_type, sys.argv[i]))
+for i in range(start_args, argument_len - 1):
+	search_terms.append(sys.argv[i])
 
 if all_search:
 	search_terms_two = search_terms
