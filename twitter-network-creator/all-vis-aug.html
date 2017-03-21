@@ -132,7 +132,7 @@
 
 
 
-d3.json("formatted_data/"+ $scope.day +".json", function(error, graph) {
+d3.json("formatted_data/"+ $scope.day +"aug.json", function(error, graph) {
 
 var  numnodes = graph.nodes.length
 
@@ -165,7 +165,6 @@ var chargeCalc = function(num){
 }
 
 charge = chargeCalc(numnodes)
-console.log(charge)
 
 var force = d3.layout.force()
     .charge(charge)

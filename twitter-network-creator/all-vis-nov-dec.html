@@ -106,10 +106,13 @@
 
   var color = d3.scale.category20();
   $scope.days=[]
-  for(var i = 9; i < 24; i++){
+  for(var i = 23; i < 31; i++){
     $scope.days.push(i)
   }
-  $scope.day = 9
+  for(var j = 1; j < 8; j++){
+    $scope.days.push(j)
+  }
+  $scope.day = 23
   var parseDate = d3.time.format("%a %b %d %X %Z %Y").parse;
   var origin = 220
   var slide_h = 150
@@ -125,14 +128,23 @@
 
  
   $scope.viz = function(){
+    console.log(d3.select('#svg_network'))
    d3.select('#svg_network').remove()
+    console.log(d3.select('#svg_network'))
    d3.select('#labelgraph').remove()
 
+function getMonth(day){
+  if(day < 10){
+    return 'dec'
+  }
+  else{
+    return 'nov'
+  }
+}
 
 
 
-
-d3.json("formatted_data/"+ $scope.day +".json", function(error, graph) {
+d3.json("formatted_data/"+ $scope.day + getMonth($scope.day) + ".json", function(error, graph) {
 
 var  numnodes = graph.nodes.length
 
@@ -165,7 +177,6 @@ var chargeCalc = function(num){
 }
 
 charge = chargeCalc(numnodes)
-console.log(charge)
 
 var force = d3.layout.force()
     .charge(charge)
@@ -571,11 +582,12 @@ $scope.resetNodeMap = function(){
     });
 
    
-  });}
+  })//d3.json fetch
+;}//$scope.vis
 
 
   $scope.viz();
-  }]);
+  }]);//controller
   </script>
 
 

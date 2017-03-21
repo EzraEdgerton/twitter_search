@@ -154,7 +154,7 @@
 var parseDate = d3.time.format('%a %b %d %X +0000 %Y')//.parse();
 
 
-  d3.json('basic_stats/aug.json', function(error,graph){
+  d3.json('basic_stats/novdec.json', function(error,graph){
     console.log(graph.stats[0].tags)
 
     graph.stats.forEach(function(d){
@@ -297,7 +297,7 @@ var tagGroupArray = [];
         .mouseZoomable(true)
     // Specify a "range chart" to link its brush extent with the zoom of the current "focus chart".
         .rangeChart(volumeChart)
-        .x(d3.time.scale().domain([new Date(2014, 7, 9), new Date(2014, 7, 24)]))
+        .x(d3.time.scale().domain([new Date(2014, 10, 22), new Date(2014, 11, 9)]))
        // .round(d3.time.hours.round)
         .xUnits(d3.time.hours)
         .elasticY(true)
@@ -335,7 +335,7 @@ tagGroupArray.shift()
         .group(dateGroup)
         .centerBar(true)
         .gap(1)
-        .x(d3.time.scale().domain([new Date(2014, 7, 9), new Date(2014, 7, 24)]))
+        .x(d3.time.scale().domain([new Date(2014, 10, 22), new Date(2014, 11, 9)]))
         .round(d3.time.hours.round)
        // .alwaysUseRounding(true)
         .xUnits(d3.time.hours)
