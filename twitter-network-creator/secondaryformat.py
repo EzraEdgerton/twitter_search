@@ -12,8 +12,8 @@ def extract_index(json):
 
 
 def secondformat(start_day, end_day, search_terms, filename):
-	with open('twitter-network-creator/half_formatted_data/half_formatted'+ str(start_day) + '-' + str(end_day) + '-' + filename + '.json') as data_file: 
-	#with open('half_formatted_data/half_formatted'+ str(start_day) + '-' + str(end_day) + '-' + filename + '.json') as data_file: 
+	#with open('twitter-network-creator/half_formatted_data/half_formatted'+ str(start_day) + '-' + str(end_day) + '-' + filename + '.json') as data_file: 
+	with open('half_formatted_data/half_formatted'+ str(start_day) + '-' + str(end_day) + '-' + filename + '.json') as data_file: 
 	
 		data = json.load(data_file)
 		data.sort(key=extract_index)
@@ -36,9 +36,9 @@ def secondformat(start_day, end_day, search_terms, filename):
 			'links': links
 		}
 		
-		with open('twitter-network-creator/formatted_data/formatted' + str(start_day) + '-' + str(end_day) + '-' + filename + '.json', 'w') as outfile:
-		#with open('formatted_data/formatted' + str(start_day) + '-' + str(end_day) + '-' + filename + '.json', 'w') as outfile:
-			json.dump(formattedthing, outfile, indent=4)
+		#with open('twitter-network-creator/formatted_data/formatted' + str(start_day) + '-' + str(end_day) + '-' + filename + '.json', 'w') as outfile:
+		with open('formatted_data/formatted' + str(start_day) + '-' + str(end_day) + '-' + filename + '.json', 'w') as outfile:
+			json.dump(formattedthing, outfile)#, indent=4)
 
 
 
