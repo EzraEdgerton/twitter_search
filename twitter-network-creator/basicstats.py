@@ -11,16 +11,14 @@ first argument:
 second through fourth (or fifth) from last argument:
 		all of the terms you wish to create the formatted data for
 
-fifth from last argument is an optional:
+fourth from last argument is an optional:
 		if it is '-range' then allinitialformat will format the data in the day range as 
 		one file.
 
 		if not included then allinitialformat will create one formatted file for each 
 		day in the range provided
 
-fourth from last argument is an optional:
-		'-info'
-		will add the tweet text into the basic data
+
 
 
 
