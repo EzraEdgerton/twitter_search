@@ -24,7 +24,7 @@ Part 2 - Filter the right range and format the json files.
 
  	the third term is an optional '-a' or '-all' which if included would run the search treating each of the subsequent search terms equally, rather than filtering out only tweets containing the first term.
 
- 	the next arguments are the search terms you are looking for. If the search terms are hashtags (e.g. #BlackLivesMatter) include the hashtag with a preceding \, if it is a username or plain text just leave it as such. If this term includes spaces, every space must have a backslash immediately preceding it.
+ 	the next arguments are the search terms you are looking for. If the search terms are hashtags (e.g. #BlackLivesMatter) exclude the hashtag. If this term includes spaces, every space must have a backslash immediately preceding it.
 
  	!!!! 
  	Remember, spaces  and special characters in terminal must be written with a preceding '\' otherwise they will be interpreted as seperate arguments.
@@ -43,11 +43,11 @@ EXAMPLES:
 
 If I wanted to look at '#BlackLivesMatter' tweets from the third to the tenth of the month I would run:
 
-	'python search.py 3 11 \#BlackLivesMatter text'
+	'python search.py 3 11 BlackLivesMatter hashtag'
 
 for only the fifth of the month I would run:
 
-	'python search.py 5 6 \#BlackLivesMatter text'
+	'python search.py 5 6 BlackLivesMatter hashtag'
 
 If I wanted to look at tweets containing the phrase 'interesting find' in the first two weeks of a month I would run:
 
@@ -59,8 +59,8 @@ If I wanted to look at tweets by user '#BlackLivesMatter' for the first two week
 
 And if I wanted to look at tweets for the first eight days of the month while changing node colors for tweets that contain '#BlackLivesMatter', '#AllLivesMatter,' '#ICantBreathe,' and '#HandsUpDontShoot' I would run:
 
-	'python search.py 1 9 -a \#BlackLivesMatter \#AllLivesMatter 
-	#ICantBreathe \#HandsUpDontShoot text'
+	'python search.py 1 9 -a BlackLivesMatter AllLivesMatter 
+	ICantBreathe HandsUpDontShoot hashtag'
 
 
 
