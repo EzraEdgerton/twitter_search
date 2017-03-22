@@ -114,24 +114,104 @@ Your data will be stored data in the formatted_data folder
 
 Part 4 – Create Visualization
 
-	1. Now that you've got the data file(s) formatted properly, you will need to copy 'twitter.html' which is in the 'twitter-network-creator' folder, rename it(without spaces in the name), and open it with a text editor. Keep this new file in the 'twitter-network-creator' folder.
+	1. Now that you've got the data file(s) formatted properly, you will need to copy 'all-vis.html' which is in the 'twitter-network-creator' folder, rename it(without spaces in the name), and open it with a text editor. Keep this new file in the 'twitter-network-creator' folder.
 
 	You can change the settings on TextEdit to open the file and see the html encoding with this tutorial (http://osxdaily.com/2013/01/14/view-html-source-code-textedit-mac-os-x/) or you can download an outside text editor like Sublime Text (my preferred text editor).
 
-	2. After opening this file, go to line 82 (in TextEdit you can do this by hitting command+l and entering the line number) and change the filepath from "formatted_data/formatted.json" to "formatted_data/" + the name of the file you just created in Part 2. (e.g I would make this new filepath "formatted_data/formatted1-2-#BlackLivesMatter.json")
+	2. After opening this file, go to line 135 (in TextEdit you can do this by hitting command+l and entering the line number) and change the filepath from "formatted_data/formatted.json" to "formatted_data/" + the name of the file you just created in Part 2. (e.g I would make this new filepath "formatted_data/formatted1-2-#BlackLivesMatter.json")
 
 	3. It is time to create a simple server for this web page to run on. Back in terminal (making sure you are still in the 'twitter-network-creator' folder), run the command 'python -m SimpleHTTPServer'. This will start a local server running on port 8000 (most likely). It will tell you what port it is running on.
 
 	4. Go to your favorite web browser and navigate to 'localhost:8000/twitter.html', replacing the 8000 with the port that you are running on and the twitter.html with what you named your new .html file. 
 
-	5. Tweak it! To tweak the size of the enclosing box, size of the nodes, and distance between the nodes, go to lines 41-44 in the .html file. You will something like this:
+	NOTE ON DAY RANGES:
 
-			var width = 700,	-->	changes width of enclosing box
-    			height = 700,	-->	changes height of enclosing box
-    			radius = 10,	--> does something unimportant	
-    			charge = -100,	-->	changes distance between nodes
-    								and how much the nodes move. The closer to 0 the closer they are together. Once positive the nodes stop standing still. Keep negative if you enjoy your visual sanity.
-    			linkDistance =30;--> does something unimportant
-    			noderadius = 2; --> changes the size of the nodes.
+	The new functionality (creating files for each day in a range) can be incorporated by naming the day files something simple with the day in the range at the start (i.e. renaming each of the files in formatted_data 1blmmikebrown.json, 2blmmikebrown.json etc). You can then add the name(without the preceding number) into the filepath at line 98 and make the range of numbers in line 109 go from the beginning to the end(inclusive) of your day range. If you make include $scope.day at the beginning of your file name path as it is in the sample all-vis.html file it will give you the option of switching files by using the dropdown selector.
 
-    Play around with these numbers until you get the visualization that works best for you!
+		NOTE FOR Multiple Months:
+			This is where things get a little complicated to explain. If you look at the all-vis-nov-dec.html for how to perhaps format things with leading nov and dec filenames. The relevant code is from lines 108-115 and 136-143. If you look at the data fetch line at 147 you can see how the getMonth function is called with the day to return the correct month name that you presumably named in your file.
+
+
+
+FORMATTING BASIC DATA:
+
+The basic data page is highly informative interactive overview of the tweet data that you made in filtered_data.
+
+1. GENERATE THE BASIC DATA
+
+run basic_stats.py its usage is as follows:
+
+first argument: 
+		the filename(excluding the day at the beginning and the .json at the end)
+		of the filtered data you wish to format
+
+second through fourth (or fifth) from last argument:
+		all of the terms you wish to create the formatted data for
+
+fourth from last argument is an optional:
+		if it is '-range' then allinitialformat will format the data in the day range as 
+		one file.
+
+		if not included then allinitialformat will create one formatted file for each 
+		day in the range provided
+
+third from last argument:
+		search type, either 'hashtag', 'text' or 'username'
+
+second from last argument:
+		first day in range
+
+last argument: 
+		last day in range (inclusive)
+
+e.g.
+
+if the data is stored in  files like 
+	9allMondaysMondaysAreTheWorstBeginningOfTheWeekTwitterDays.json
+
+and I want to format data for MondaysAreTheWorst and TwitterDays hashtags
+from the 3rd to the 13th with each day stored in its own file I would run:
+
+	python allinitialformat.py allMondaysMondaysAreTheWorstBeginningOfTheWeekTwitterDays MondaysAreTheWorst TwitterDays hashtag 3 14
+
+If I wanted to do that same thing but store the entire range in one formatted file I would run:
+
+	python allinitialformat.py allMondaysMondaysAreTheWorstBeginningOfTheWeekTwitterDays MondaysAreTheWorst TwitterDays -range hashtag 3 14
+
+It Stores data in the basic_stats folder
+
+
+NOTE ON MULTIPLE MONTHS
+
+if you want to generate a file with a range of dates that passes through more than one month, the trouble will be with running basicstats.py on that day range.
+I have found that by changing the leading day in the filtered_data files so that the days continue past the end of the month.
+
+For example, if I were trying to generate basic stats for the range from August 28th to September 4th I would change the september file leading numbers to continue as if August had 35 days.
+
+	so it would be:
+	28thing.json
+	29thing.json
+	30thing.json
+	31thing.json
+	32thing.json //changed from 1thing.json
+	33thing.json //changed from 2thing.json
+	34thing.json //changed from 3thing.json
+	35thing.json
+
+Then when running basicstats.py your range would be 28 to 36
+
+2. ALTER HTML AND VISUALIZE
+
+Similarly to the all-vis.html alterations, change the filepath on line 157 to the name of the file you generated in the previous step.
+
+Next you will want to change the date range of two of the graphs:
+	 At line 300:
+	  .x(d3.time.scale().domain([new Date(2014, 7, 9), new Date(2014, 7, 24)]))
+
+	  You will have to change the numbers within the Date()s to the year, month and day range you generated the files with. Remember that the month starts at 0, so currently the range is from August 7th 2014 to August 24th 2014.
+
+	 You will want to do the same for line 338.
+
+
+
+
