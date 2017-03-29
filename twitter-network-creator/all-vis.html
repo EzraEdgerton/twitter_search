@@ -64,10 +64,23 @@
          </div>
     </div>
     <div class='row'>
-       <div class='col-lg-12'>
+      <div class='col-lg-12'>
         <div id="graph"></div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-lg-12'>
+        <h5>Toggle Node Size By:</h5>
+        <div class="btn-group" data-toggle="buttons">
+          <label class="btn btn-primary active" ng-click='toggleButton(1)'>
+            <input type="radio" name="options"  id="option1" checked> Tweets
+          </label>
+          <label class="btn btn-primary" ng-click='toggleButton(2)'>
+            <input type="radio" name="options"  id="option2"> Links
+          </label>
         </div>
       </div>
+    </div>
     <div class="row">
      <div class='col-lg-12'>
     <div id="network" ></div>
@@ -339,13 +352,7 @@ var selectionrects = labelgroups.append('rect')
 
   var arc = d3.svg.arc()
       .innerRadius(0)
-    //  .outerRadius(function(d) {return Math.sqrt(d[3]/Math.PI) * 10})
-      .outerRadius(function(d){ 
-          if(d[5] > 0){
-            return Math.sqrt(d[5]/Math.PI) * 8
-          }
-          return Math.sqrt(1/Math.PI) * 8
-        })
+      .outerRadius(function(d) {return Math.sqrt(d[3]/Math.PI) * 10})
       .startAngle(function(d){return cScale(d[0]);})
       .endAngle(function(d){return cScale(d[1]);})
 
@@ -355,6 +362,16 @@ var selectionrects = labelgroups.append('rect')
       .startAngle(function(d){return cScale(d[0]);})
       .endAngle(function(d){return cScale(d[1]);});
 
+  var arc3 = d3.svg.arc()
+      .innerRadius(0)
+      .outerRadius(function(d){ 
+          if(d[5] > 0){
+            return Math.sqrt(d[5]/Math.PI) * 8
+          }
+          return Math.sqrt(1/Math.PI) * 8
+        })
+      .startAngle(function(d){return cScale(d[0]);})
+      .endAngle(function(d){return cScale(d[1]);})
 
 
 
@@ -442,10 +459,18 @@ function setClass(node, d, i){
     console.log()
     var selnode = node.selectAll('path').transition()
     if (node.classed('big')){
+      if($scope.nodeToggle == 2){
        selnode
+      .duration(250)
+      .attr('d', arc3)
+      .style('opacity', 1);
+      }
+      else{
+      selnode
       .duration(250)
       .attr('d', arc)
       .style('opacity', 1);
+      }
     node.classed('small', true)
     node.classed('big', false)
      node.select('.tweetbox').transition()
@@ -453,10 +478,14 @@ function setClass(node, d, i){
       tweettext.style('display', 'none')
     }
     else{
-    selnode
+
+      selnode
       .duration(250)
       .attr('d', arc2)
       .style('opacity', 1);
+    
+
+   
     node.classed('big', true)
     node.classed('small', false)
      node.select('.tweetbox').transition()
@@ -480,6 +509,24 @@ function setClass(node, d, i){
         node.style('stroke-opacity', .3)
     node.select('.nametext').classed('hide', true)
   }
+$scope.nodeToggle = 1
+$scope.toggleButton = function(nodesize){
+  $scope.nodeToggle = nodesize
+  console.log($scope.nodeToggle)
+  var circles = d3.selectAll('path').transition()
+  if($scope.nodeToggle == 2){
+      circles
+     .duration(250)
+      .attr('d', arc3)
+  }
+  else{
+      circles
+     .duration(250)
+      .attr('d', arc)
+  }
+
+  
+}
    
 $scope.resetNodeMap = function(){
   updateData(0, 24)
