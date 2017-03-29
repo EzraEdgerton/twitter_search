@@ -132,9 +132,29 @@
 
 
 
-d3.json("formatted_data/"+ $scope.day +".json", function(error, graph) {
+d3.json("formatted_data/"+ $scope.day +"aug.json", function(error, graph) {
 
 var  numnodes = graph.nodes.length
+
+graph.nodes.forEach(function(d){
+d.linksnum = 0
+d.angles.forEach(function(i){
+  i.push(0)
+})
+ 
+})
+
+graph.links.forEach(function(d){
+  graph.nodes[d.source].linksnum++
+  graph.nodes[d.source].angles.forEach(function(s){
+    s[5]++
+  })
+ graph.nodes[d.target].linksnum++
+  graph.nodes[d.target].angles.forEach(function(t){
+    t[5]++
+  })
+
+})
 
 
 var chargeCalc = function(num){
@@ -319,7 +339,13 @@ var selectionrects = labelgroups.append('rect')
 
   var arc = d3.svg.arc()
       .innerRadius(0)
-      .outerRadius(function(d) {return Math.sqrt(d[3]/Math.PI) * 10})
+    //  .outerRadius(function(d) {return Math.sqrt(d[3]/Math.PI) * 10})
+      .outerRadius(function(d){ 
+          if(d[5] > 0){
+            return Math.sqrt(d[5]/Math.PI) * 8
+          }
+          return Math.sqrt(1/Math.PI) * 8
+        })
       .startAngle(function(d){return cScale(d[0]);})
       .endAngle(function(d){return cScale(d[1]);})
 
