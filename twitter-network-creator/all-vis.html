@@ -72,11 +72,11 @@
       <div class='col-lg-12'>
         <h5>Toggle Node Size By:</h5>
         <div class="btn-group" data-toggle="buttons">
-          <label class="btn btn-primary active" ng-click='toggleButton(1)'>
-            <input type="radio" name="options"  id="option1" checked> Tweets
+          <label class="btn btn-primary" ng-click='toggleButton(1)'>
+            <input type="radio" name="options"  id="option1" > Tweets
           </label>
-          <label class="btn btn-primary" ng-click='toggleButton(2)'>
-            <input type="radio" name="options"  id="option2"> Links
+          <label class="btn btn-primary active" ng-click='toggleButton(2)'>
+            <input type="radio" name="options"  id="option2" checked> Links
           </label>
         </div>
       </div>
@@ -116,6 +116,7 @@
       linkDistance = 20;
     //linkDistance = 0.5714285714285714;
 
+$scope.nodeToggle = 2
 
   var color = d3.scale.category20();
   $scope.days=[]
@@ -509,10 +510,9 @@ function setClass(node, d, i){
         node.style('stroke-opacity', .3)
     node.select('.nametext').classed('hide', true)
   }
-$scope.nodeToggle = 1
+
 $scope.toggleButton = function(nodesize){
   $scope.nodeToggle = nodesize
-  console.log($scope.nodeToggle)
   var circles = d3.selectAll('path').transition()
   if($scope.nodeToggle == 2){
       circles
@@ -544,12 +544,25 @@ $scope.resetNodeMap = function(){
     })
 
   }
-    
-  circle.data(function(d, i ){ return d.angles })
+  console.log($scope.nodeToggle)
+  if($scope.nodeToggle == 2){
+    circle.data(function(d, i ){ return d.angles })
                 .enter()
                 .append('path')
                 .attr('class', function(d){ return 'arccircle';})
-
+                .attr('d', arc3)
+                .style('fill', function(d, i){ return color(d[2])})
+                .style('opacity', 1)
+                .style('stroke', "black")
+                .style('stroke-opacity', .3)
+                .style('stroke-width', 1)
+                .attr("transform", 'translate(' + origin + ',' + origin + ')')
+  }
+  else{
+      circle.data(function(d, i ){ return d.angles })
+                .enter()
+                .append('path')
+                .attr('class', function(d){ return 'arccircle';})
                 .attr('d', arc)
                 .style('fill', function(d, i){ return color(d[2])})
                 .style('opacity', 1)
@@ -557,7 +570,8 @@ $scope.resetNodeMap = function(){
                 .style('stroke-opacity', .3)
                 .style('stroke-width', 1)
                 .attr("transform", 'translate(' + origin + ',' + origin + ')')
-
+  }
+  
   svg.on('click', enlargeNode)
 
 
