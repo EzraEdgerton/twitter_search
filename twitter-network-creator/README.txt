@@ -22,7 +22,10 @@ Part 2 - Filter the right range and format the json files.
 
  	the second argument as the end day in the range you wish to search  (inclusive)
 
- 	the third term is an optional '-a' or '-all' which if included would run the search treating each of the subsequent search terms equally, rather than filtering out only tweets containing the first term.
+ 	the third term is '-a' or '-all' which if included would run the search treating each of the subsequent search terms equally, rather than filtering out only tweets containing the first term.
+
+ 	****USE THE -all TAG****
+
 
  	the next arguments are the search terms you are looking for. If the search terms are hashtags (e.g. #BlackLivesMatter) exclude the hashtag. If this term includes spaces, every space must have a backslash immediately preceding it.
 
@@ -118,11 +121,11 @@ Part 4 – Create Visualization
 
 	You can change the settings on TextEdit to open the file and see the html encoding with this tutorial (http://osxdaily.com/2013/01/14/view-html-source-code-textedit-mac-os-x/) or you can download an outside text editor like Sublime Text (my preferred text editor).
 
-	2. After opening this file, go to line 135 (in TextEdit you can do this by hitting command+l and entering the line number) and change the filepath from "formatted_data/formatted.json" to "formatted_data/" + the name of the file you just created in Part 2. (e.g I would make this new filepath "formatted_data/formatted1-2-#BlackLivesMatter.json")
+	2. After opening this file, go to line 149 (in TextEdit you can do this by hitting command+l and entering the line number) and change the filepath from "formatted_data/formatted.json" to "formatted_data/" + the name of the file you just created in Part 2. (e.g I would make this new filepath "formatted_data/formatted1-2-#BlackLivesMatter.json"). If you are doing a single file and not a range of files, go to line 276 and change to date range to be the range of days you created the file for. The format for this is Year/day/month with month starting at 0.
 
 	3. It is time to create a simple server for this web page to run on. Back in terminal (making sure you are still in the 'twitter-network-creator' folder), run the command 'python -m SimpleHTTPServer'. This will start a local server running on port 8000 (most likely). It will tell you what port it is running on.
 
-	4. Go to your favorite web browser and navigate to 'localhost:8000/twitter.html', replacing the 8000 with the port that you are running on and the twitter.html with what you named your new .html file. 
+	4. Go to your favorite web browser and navigate to 'localhost:8000/all-vis.html', replacing the 8000 with the port that you are running on and the all-vis.html with what you named your new .html file. 
 
 	NOTE ON DAY RANGES:
 
