@@ -565,7 +565,9 @@ $scope.resetNodeMap = function(){
 
 
   svg.transition().duration(250).attr('display', function(d){
+
     var hour = d.time[0]
+    
     if(hour < low || hour > high){
       return 'none';
     }
