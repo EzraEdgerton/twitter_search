@@ -116,16 +116,41 @@ Your data will be stored data in the formatted_data folder
 
 
 Part 4 – Create Visualization
+	IF YOU INCLUDED THE -RANGE TAG IN THE PREVIOUS STEP, FOLLOW THE DIRECTIONS BELOW:
+	1. Now that you've got the data file(s) formatted properly, you will need to copy 'all-vis-range.html' which is in the 'twitter-network-creator' folder, rename it(without spaces in the name), and open it with a text editor. Keep this new file in the 'twitter-network-creator' folder.
+
+	You can change the settings on TextEdit to open the file and see the html encoding with this tutorial (http://osxdaily.com/2013/01/14/view-html-source-code-textedit-mac-os-x/) or you can download an outside text editor like Sublime Text (my preferred text editor).
+
+
+	2. After opening this file, go to line 149 (in TextEdit you can do this by hitting command+l and entering the line number) and change the filepath from "formatted_data/formatted.json" to "formatted_data/" + the name of the file you just created in Part 2. (e.g I would make this new filepath "formatted_data/formatted1-2-#BlackLivesMatter.json"). go to line 276 and change to date range to be the range of days you created the file for. The format for this is Year/day/month with month starting at 0.
+
+	IF YOU DID NOT INCLUDE THE -RANGE TAG IN THE PREVIOUS STEP, FOLLOW THESE DIRECTIONS:
+	0. Go through the day files you created and change their names so that the day of the file is at the beginning of the filename and the end of the filename is the same for every day file.
 
 	1. Now that you've got the data file(s) formatted properly, you will need to copy 'all-vis.html' which is in the 'twitter-network-creator' folder, rename it(without spaces in the name), and open it with a text editor. Keep this new file in the 'twitter-network-creator' folder.
 
 	You can change the settings on TextEdit to open the file and see the html encoding with this tutorial (http://osxdaily.com/2013/01/14/view-html-source-code-textedit-mac-os-x/) or you can download an outside text editor like Sublime Text (my preferred text editor).
 
-	2. After opening this file, go to line 149 (in TextEdit you can do this by hitting command+l and entering the line number) and change the filepath from "formatted_data/formatted.json" to "formatted_data/" + the name of the file you just created in Part 2. (e.g I would make this new filepath "formatted_data/formatted1-2-#BlackLivesMatter.json"). If you are doing a single file and not a range of files, go to line 276 and change to date range to be the range of days you created the file for. The format for this is Year/day/month with month starting at 0.
+	2. After opening this file, go to line 149 (in TextEdit you can do this by hitting command+l and entering the line number) and change the filepath from "formatted_data/" + $scope.day + "aug.json" to "formatted_data/" + $scope.day + THE NEW FILE ENDING YOU RENAMED THE FILES TO IN STEP 0.
 
-	3. It is time to create a simple server for this web page to run on. Back in terminal (making sure you are still in the 'twitter-network-creator' folder), run the command 'python -m SimpleHTTPServer'. This will start a local server running on port 8000 (most likely). It will tell you what port it is running on.
+	3. Go to line 123 and change the range of days  in that line (currently from 9 to 23) to reflect the day range of files you created. Also on line 126 change the 9 in $scope.day = 9 to
+	the first day in the range of day files you created. 
 
-	4. Go to your favorite web browser and navigate to 'localhost:8000/all-vis.html', replacing the 8000 with the port that you are running on and the all-vis.html with what you named your new .html file. 
+	####NOTE ON RANGES SPANNING MULTIPLE MONTHS####
+	For simplicity's sake, try not to do this, but if so you can follow the template from all-vis-nov-dec.html. The relevant logic is in the getMonth function, from lines 136 to 143. It changes the file path in line 149 to the correct month/day. 
+
+
+Part 5 – Run the server
+	1. It is time to create a simple server for this web page to run on. Back in terminal (making sure you are still in the 'twitter-network-creator' folder), run the command 'python -m SimpleHTTPServer'. This will start a local server running on port 8000 (most likely). It will tell you what port it is running on.
+
+	2. Go to your favorite web browser and navigate to 'localhost:8000/all-vis.html', replacing the 8000 with the port that you are running on and the all-vis.html with what you named your new .html file. 
+
+	
+
+
+
+
+
 
 	NOTE ON DAY RANGES:
 
